@@ -130,3 +130,6 @@ dmypy.json
 
 # ignore the dataset content (because is too big)
 dataset/*
+
+# ignore all images
+*.png
