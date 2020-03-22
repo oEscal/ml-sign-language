@@ -1,6 +1,7 @@
 import argparse
 import random
 import time
+import json
 
 import numpy as np
 
@@ -130,9 +131,15 @@ def main(args):
 	np.save(f"{PATH_SAVE}{args.theta2_file}_id{theta_file_id}", Theta2)
 
 	save_file = open(f"{PATH_SAVE}{args.time_file}", 'a')
-	save_file.write(f"hidden_layer1=<{hidden_layer_size}>, alpha=<{alpha}>"
-	                f", Lambda=<{Lambda}>, num_iterations=<{num_iterations}>"
-	                f", theta_file_id=<{theta_file_id}>, time=<{time.time() - time_init}>")
+	save_file.write(json.dumps({
+		'hidden_layer1': hidden_layer_size,
+		'alpha': alpha,
+		'Lambda': Lambda,
+		'num_iterations': num_iterations,
+		'theta_file_id': theta_file_id,
+		'time': time.time() - time_init
+	}))
+	save_file.write("\n")
 	save_file.close()
 
 
@@ -141,11 +148,11 @@ if __name__ == "__main__":
 
 	parser.add_argument("--Lambda", type=float, default=0.1)
 	parser.add_argument("--alpha", type=float, default=1)
-	parser.add_argument("--num_iterations", type=int, default=100)
+	parser.add_argument("--num_iterations", type=int, default=200)
 
 	parser.add_argument("--theta1_file", type=str, default="theta1")
 	parser.add_argument("--theta2_file", type=str, default="theta2")
-	parser.add_argument("--time_file", type=str, default="time.txt")
+	parser.add_argument("--time_file", type=str, default="time.json")
 
 	parser.add_argument("--theta_file_id", type=int, default=random.randint(100, 100000))
 
