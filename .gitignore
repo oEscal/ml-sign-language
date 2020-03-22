@@ -137,3 +137,5 @@ dataset/*
 
 # ignore all images
 *.png
+
+results/

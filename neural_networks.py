@@ -1,8 +1,13 @@
+import argparse
+import random
 import time
 
 import numpy as np
 
 from utils import sigmoid, sigmoid_gradient, read_file
+
+
+PATH_SAVE = "results/"
 
 
 def nnCostFunction(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, Lambda):
@@ -92,35 +97,57 @@ def gradientDescentnn(X, y, initial_nn_params, alpha, num_iters, Lambda, input_l
 	return nn_paramsFinal, J_history
 
 
-if __name__ == "__main__":
-	time_init = time.time()
+def main(args):
+	theta_file_id = args.theta_file_id
 
 	X, y = read_file("dataset/sign_mnist_train.csv")
+	time_init = time.time()
+
 	m = X.shape[0]
 
+	# layer sizes
 	input_layer_size = X.shape[1] + 1
-	hidden_layer_size = 25
+	hidden_layer_size = 50
+	output_layer_size = np.max(y) - np.min(y)
 
 	X = np.append(np.ones((m, 1)), X, axis=1)
 
-	alpha = 1  # learning rate
-	num_iterations = 1000
-	Lambda = 0.1
-	num_labels = 10
+	alpha = args.alpha  # learning rate
+	Lambda = args.Lambda
+	num_iterations = args.num_iterations
 
 	initial_Theta1 = randInitializeWeights(input_layer_size, hidden_layer_size)
-	initial_Theta2 = randInitializeWeights(hidden_layer_size, num_labels)
+	initial_Theta2 = randInitializeWeights(hidden_layer_size, output_layer_size)
 	initial_nn_params = np.append(initial_Theta1.flatten(), initial_Theta2.flatten())
 
 	nnTheta, nnJ_history = gradientDescentnn(X, y, initial_nn_params, alpha, num_iterations, Lambda, input_layer_size,
-	                                         hidden_layer_size, num_labels)
+	                                         hidden_layer_size, output_layer_size)
 
 	Theta1 = nnTheta[:((input_layer_size + 1) * hidden_layer_size)].reshape(hidden_layer_size, input_layer_size + 1)
-	Theta2 = nnTheta[((input_layer_size + 1) * hidden_layer_size):].reshape(num_labels, hidden_layer_size + 1)
+	Theta2 = nnTheta[((input_layer_size + 1) * hidden_layer_size):].reshape(output_layer_size, hidden_layer_size + 1)
 
-	np.save("theta1", Theta1)
-	np.save("theta1", Theta2)
-	print(time.time() - time_init)
+	np.save(f"{PATH_SAVE}{args.theta1_file}_id{theta_file_id}", Theta1)
+	np.save(f"{PATH_SAVE}{args.theta2_file}_id{theta_file_id}", Theta2)
 
-	# pred3 = predict(Theta1, Theta2, X)
-	# print("Training Set Accuracy:", sum(pred3[:, np.newaxis] == y)[0] / m * 100, "%")
+	save_file = open(f"{PATH_SAVE}{args.time_file}", 'a')
+	save_file.write(f"hidden_layer1=<{hidden_layer_size}>, alpha=<{alpha}>"
+	                f", Lambda=<{Lambda}>, num_iterations=<{num_iterations}>"
+	                f", theta_file_id=<{theta_file_id}>, time=<{time.time() - time_init}>")
+	save_file.close()
+
+
+if __name__ == "__main__":
+	parser = argparse.ArgumentParser()
+
+	parser.add_argument("--Lambda", type=float, default=0.1)
+	parser.add_argument("--alpha", type=float, default=1)
+	parser.add_argument("--num_iterations", type=int, default=100)
+
+	parser.add_argument("--theta1_file", type=str, default="theta1")
+	parser.add_argument("--theta2_file", type=str, default="theta2")
+	parser.add_argument("--time_file", type=str, default="time.txt")
+
+	parser.add_argument("--theta_file_id", type=int, default=random.randint(100, 100000))
+
+	args = parser.parse_args()
+	main(args)
