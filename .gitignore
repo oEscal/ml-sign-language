@@ -139,3 +139,6 @@ dataset/*
 *.png
 
 results/
+classifiers/
+best_param_classifiers/
+
