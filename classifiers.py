@@ -7,10 +7,12 @@ from sklearn.linear_model import LogisticRegression as LogisticRegression_sklear
 from sklearn.metrics import classification_report, mean_squared_error
 from abc import abstractmethod, ABCMeta
 from sklearn.neural_network import MLPClassifier
+from os import listdir
+from os.path import isfile, join
 
 
 def save_classifier_object(classifier, file_name):
-    path = f"classifiers/{classifier.name}_{classifier.variation_param}"
+    path = f"classifiers_/{classifier.name}_{classifier.variation_param}"
     Path(path).mkdir(parents=True, exist_ok=True)  # if folder doesnt exists, crete one
 
     with open(f"{path}/{file_name}", 'wb') as output:
@@ -18,12 +20,31 @@ def save_classifier_object(classifier, file_name):
 
 
 def save_best_param(classifier_list):
-    best_classifier = sorted(classifier_list, key=lambda c: c.params[ErrorLabel.CV])[0]
+    best_classifier = sorted(classifier_list, key=lambda c: (
+        c.params[ErrorLabel.CV], c.params[ErrorLabel.TEST], c.params[ErrorLabel.TRAIN]))[0]
     path = f"best_param_classifiers/{best_classifier.name}"
 
     Path(path).mkdir(parents=True, exist_ok=True)  # if folder doesnt exists, crete one
     with open(f"{path}/{best_classifier.variation_param}", 'wb') as output:
         pickle.dump(best_classifier, output)
+
+
+def get_bests_classifier(path):
+    folders = [f for f in listdir(path)]
+    classifiers = {}
+
+    for folder_name in folders:
+        folder_path = f"{path}/{folder_name}"
+        classifiers[folder_name] = []
+
+        for file_name in [f for f in listdir(folder_path)]:
+            file_path = f"{folder_path}/{file_name}"
+            
+            with open(file_path, 'rb') as output:
+                classifier = pickle.load(output)
+                classifiers[folder_name].append(classifier)
+
+    return classifiers
 
 
 @unique
@@ -81,7 +102,7 @@ class Classifier(metaclass=ABCMeta):
         return self.__str__()
 
     def __str__(self):
-        return f"Classifier : {self.name} ->  {self.params}"
+        return f"Classifier : {self.name} ->  {self.params} -> Best value for: {self.variation_param}\n"
 
 
 class PolynomialSvm(Classifier):
@@ -96,6 +117,9 @@ class PolynomialSvm(Classifier):
     def save_classifier(self, file_name=None):
         super().save_classifier(
             file_name if file_name is not None else f'{self.name}_C_{self.C}_degree_{self.degree}')
+
+    def __str__(self):
+        return super().__str__() + f"C->{self.C}\tdegree->{self.degree}\n"
 
 
 class NeuralNetwork(Classifier):
@@ -113,6 +137,9 @@ class NeuralNetwork(Classifier):
             file_name if file_name is not None else f'{self.name}_alpha_{self.alpha}_'
                                                     f'hidden_size_{self.hidden_layer_sizes}_max_iter_{self.max_iter}')
 
+    def __str__(self):
+        return super().__str__() + f"alpha->{self.alpha}\thidden_layer_sizes->{self.hidden_layer_sizes}\tmax_iter->{self.max_iter}\n"
+
 
 class LogisticRegression(Classifier):
     def __init__(self, C, max_iter, variation_param, verbose=False):
@@ -126,6 +153,9 @@ class LogisticRegression(Classifier):
     def save_classifier(self, file_name=None):
         super().save_classifier(
             file_name if file_name is not None else f'{self.name}_C_{self.C}_max_iter_{self.max_iter}')
+
+    def __str__(self):
+        return super().__str__() + f"C->{self.C}\tmax_iter->{self.max_iter}\n"
 
     """
     class GaussianSvm:
