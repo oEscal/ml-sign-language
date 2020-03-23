@@ -13,7 +13,7 @@ def read_file(path_file: str) -> (np.ndarray, np.ndarray):
         and y represents all the outputs for each data example
     """
     data = pd.read_csv(path_file, header=None, skiprows=1).values
-    return data[:, 1:], data[:, 0].reshape(data.shape[0], 1)
+    return np.divide(data[:, 1:], np.max(data)), data[:, 0].reshape(data.shape[0], 1)
 
 
 def represent_data_graphically(data: np.ndarray, file_save: str, rows: int = 10, cols: int = 10):

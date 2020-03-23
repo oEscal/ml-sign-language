@@ -8,7 +8,7 @@ import numpy as np
 from utils import sigmoid, sigmoid_gradient, read_file
 
 
-PATH_SAVE = "results/"
+PATH_SAVE = "results/neural_networks/"
 
 
 def nnCostFunction(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, Lambda):
@@ -107,11 +107,9 @@ def main(args):
 	m = X.shape[0]
 
 	# layer sizes
-	input_layer_size = X.shape[1] + 1
+	input_layer_size = X.shape[1]
 	hidden_layer_size = 50
-	output_layer_size = np.max(y) - np.min(y)
-
-	X = np.append(np.ones((m, 1)), X, axis=1)
+	output_layer_size = np.max(y) - np.min(y) + 1
 
 	alpha = args.alpha  # learning rate
 	Lambda = args.Lambda
