@@ -7,7 +7,7 @@ max_alpha=5
 id=0
 for alpha in $(seq $min_alpha 0.1 $max_alpha); do
    echo Starting alpha=$alpha
-   python neural_networks.py --alpha $alpha --theta_file_id $id --lambda 0.005
+   python neural_networks.py --alpha ${alpha/,/.} --theta_file_id $id --Lambda 0.005
    id=$((id + 1))
 done
 

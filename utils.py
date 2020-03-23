@@ -24,7 +24,7 @@ def represent_data_graphically(data: np.ndarray, file_save: str, rows: int = 10,
     for row in range(rows):
         for col in range(cols):
             example_id = np.random.randint(data_len)
-            axis[row, col].imshow(data[example_id, 1:].reshape(data_image_size, data_image_size, order="F"))
+            axis[row, col].imshow(data[example_id, :].reshape(data_image_size, data_image_size, order="F"))
     plt.savefig(file_save)
 
 

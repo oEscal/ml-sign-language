@@ -145,7 +145,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 
 	parser.add_argument("--Lambda", type=float, default=0.1)
-	parser.add_argument("--alpha", type=float, default=1)
+	parser.add_argument("--alpha", type=float, default=1.0)
 	parser.add_argument("--num_iterations", type=int, default=200)
 
 	parser.add_argument("--theta1_file", type=str, default="theta1")
