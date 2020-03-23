@@ -31,7 +31,7 @@ def represent_data_graphically(data: np.ndarray, file_save: str, rows: int = 10,
 def sigmoid(z: Union[Number, np.ndarray]) -> np.ndarray:
     """return the sigmoid of z
     """
-    return 1 / (1 + np.exp(-z))
+    return .5 * (1 + np.tanh(.5 * z))
 
 
 # Computes the gradient of sigmoid function

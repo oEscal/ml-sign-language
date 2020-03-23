@@ -132,7 +132,7 @@ def main(args):
 	save_file.write(json.dumps({
 		'hidden_layer1': hidden_layer_size,
 		'alpha': alpha,
-		'Lambda': Lambda,
+		'lambda': Lambda,
 		'num_iterations': num_iterations,
 		'theta_file_id': theta_file_id,
 		'time': time.time() - time_init
