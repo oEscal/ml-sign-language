@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from pylab import title, figure, xlabel, ylabel, xticks, bar, legend, axis, savefig
+from classifiers import get_bests_classifier
 
 
 def plot_image(img, file_name=None, show=False):
@@ -39,6 +40,7 @@ def plot_label_frequencies(labels, term, file_name=None, show=False):
 
 
 def main():
+    """
     x_train, y_train = read_file('dataset/sign_mnist_train.csv')
     x_test, y_test = read_file('dataset/sign_mnist_test.csv')
 
@@ -46,6 +48,13 @@ def main():
     plot_label_frequencies(y_test, "Test set")
 
     plot_image(x_train[0])
+    """
+
+    best_classifiers = get_bests_classifier("best_param_classifiers")
+
+    for classifier_list in best_classifiers.values():
+        for classifier in classifier_list:
+            print(classifier)
 
 
 if __name__ == '__main__':

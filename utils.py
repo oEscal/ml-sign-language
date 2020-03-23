@@ -63,55 +63,10 @@ def plot_image(data):
     plt.show()
 
 
-class CrossValidation:
-    def __init__(self):
-        self.C = [.0001, .001, .01]
-        self.gamma = [.0001, .001, .01, .1, 1, 10, 100]
-        self.degree = [1, 2, 3, 4, 5]
-        self.kernel = ['linear', 'rbf', 'poly', 'sigmoid', 'precomputed']
-        self.probability = [True]
-        self.grid = {
-            'C': self.C[:1],
-            'kernel': self.kernel[:1],
-            'gamma': self.gamma[:1],
-            'degree': self.degree[:1],
-            'probability': self.probability
-        }
-        self.jobs = -1
 
 
-class RandomSearch(CrossValidation):
-
-    def __init__(self, estimator):
-        super().__init__()
-        self.random_search = RandomizedSearchCV(estimator=estimator,
-                                                param_distributions={},
-                                                scoring='accuracy',
-                                                cv=3,
-                                                n_iter=50,
-                                                verbose=3,
-                                                n_jobs=self.jobs,
-                                                random_state=8)
-
-    def fit_data(self, x, y):
-        self.random_search.fit(x, y)
-        return self.random_search.best_params_, self.random_search.best_score_, self.random_search.best_estimator_
 
 
-class GridSearch(CrossValidation):
 
-    def __init__(self, estimator):
-        super().__init__()
-        self.cv_sets = ShuffleSplit(n_splits=3, test_size=.33, random_state=8)
-        self.grid_search = GridSearchCV(estimator=estimator,
-                                        param_grid={},
-                                        scoring='accuracy',
-                                        cv=self.cv_sets,
-                                        verbose=3,
-                                        n_jobs=self.jobs)
-
-    def fit_data(self, x, y):
-        self.grid_search.fit(x, y)
-        return self.grid_search.best_params_, self.grid_search.best_score_, self.grid_search.best_estimator_
 
 
