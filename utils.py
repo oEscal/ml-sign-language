@@ -17,7 +17,7 @@ def read_file(path_file: str) -> (np.ndarray, np.ndarray):
 
 
 def represent_data_graphically(data: np.ndarray, file_save: str, rows: int = 10, cols: int = 10):
-    data_image_size = int(math.sqrt(len(data[0, 1:])))
+    data_image_size = int(math.sqrt(len(data[0, :])))
     data_len = len(data)
 
     fig, axis = plt.subplots(rows, cols, figsize=(data_image_size, data_image_size))
