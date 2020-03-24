@@ -60,10 +60,6 @@ def main():
     for name, classifier_list in classifiers.items():
         print(name)
         for classifier in classifier_list:
-            #classifier.measure_all_error(x_train, y_train, x_cv, y_cv, x_test, y_test)
-            #classifier.generate_report(x_test, y_test)
-            #classifier.save_classifier()
-
             print(classifier)
 
         save_best_param(classifier_list)

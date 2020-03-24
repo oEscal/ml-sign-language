@@ -2,14 +2,12 @@ from sklearn import svm
 from pathlib import Path
 import pickle
 from enum import Enum, unique
-
 from sklearn.linear_model import LogisticRegression as LogisticRegression_sklearn
-from sklearn.metrics import classification_report, mean_squared_log_error
+from sklearn.metrics import classification_report
 from abc import abstractmethod, ABCMeta
 from sklearn.neural_network import MLPClassifier
 from os import listdir
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 def save_classifier_object(classifier, file_name):
@@ -92,9 +90,6 @@ class Classifier(metaclass=ABCMeta):
 
     def measure_all_error(self, x_train, y_train, x_cv, y_cv, x_test, y_test):
         params = dict(self.params)
-        for i in params:
-            if type(i) == str:
-                self.params.pop(i, None)
         self.measure_error(ErrorLabel.TRAIN, x_train, y_train)
         self.measure_error(ErrorLabel.CV, x_cv, y_cv)
         self.measure_error(ErrorLabel.TEST, x_test, y_test)
@@ -181,37 +176,3 @@ class LogisticRegression(Classifier):
 
     def __str__(self):
         return super().__str__() + f"C->{self.C}\tmax_iter->{self.max_iter}\n"
-
-    """
-    class GaussianSvm:
-        def __init__(self, C, gamma):
-            self.svc = svm.SVC(kernel='rbf', C=C, probability=True, gamma=gamma, verbose=2)
-            self.train_score = 0
-            self.test_score = 0
-            self.cross_validation_score = 0
-            self.report = None
-    
-        def train_model(self, x, y, train_score=True):
-            print("Training model")
-            self.svc.fit(x, y)
-    
-            if train_score:
-                self.train_score = accuracy_score(y, self.svc.predict(x))
-    
-        def cross_validation(self, x, y):
-            print("Cross validation")
-            self.cross_validation_score = accuracy_score(y, self.svc.predict(x))
-    
-        def predict(self, x, y):
-            print("Predict")
-            predict_list = self.svc.predict(x)
-            self.test_score = accuracy_score(y, predict_list)
-            self.report = classification_report(y, predict_list)
-    
-        def save_report(self, file_name=None):
-            save_classifier(self, file_name if file_name is not None else self.__class__.__name__)
-    
-        def __str__(self):
-            return f"{self.__class__.__name__}\n\tTrain Score: {self.train_score}\n\tCv Score: {self.cross_validation_score}\n\t" \
-                   f"Train Score: {self.test_score}\nReport: {self.report}\n"
-    """
