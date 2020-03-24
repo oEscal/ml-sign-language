@@ -89,7 +89,6 @@ class Classifier(metaclass=ABCMeta):
         save_classifier_object(self, file_name if file_name is not None else self.name)
 
     def measure_all_error(self, x_train, y_train, x_cv, y_cv, x_test, y_test):
-        params = dict(self.params)
         self.measure_error(ErrorLabel.TRAIN, x_train, y_train)
         self.measure_error(ErrorLabel.CV, x_cv, y_cv)
         self.measure_error(ErrorLabel.TEST, x_test, y_test)
