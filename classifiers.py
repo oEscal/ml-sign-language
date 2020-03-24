@@ -4,11 +4,12 @@ import pickle
 from enum import Enum, unique
 
 from sklearn.linear_model import LogisticRegression as LogisticRegression_sklearn
-from sklearn.metrics import classification_report, mean_squared_error
+from sklearn.metrics import classification_report, mean_squared_log_error
 from abc import abstractmethod, ABCMeta
 from sklearn.neural_network import MLPClassifier
 from os import listdir
-from os.path import isfile, join
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def save_classifier_object(classifier, file_name):
@@ -29,7 +30,7 @@ def save_best_param(classifier_list):
         pickle.dump(best_classifier, output)
 
 
-def get_bests_classifier(path):
+def get_classifiers(path):
     folders = [f for f in listdir(path)]
     classifiers = {}
 
@@ -39,7 +40,7 @@ def get_bests_classifier(path):
 
         for file_name in [f for f in listdir(folder_path)]:
             file_path = f"{folder_path}/{file_name}"
-            
+
             with open(file_path, 'rb') as output:
                 classifier = pickle.load(output)
                 classifiers[folder_name].append(classifier)
@@ -75,7 +76,10 @@ class Classifier(metaclass=ABCMeta):
 
     def measure_error(self, label, x, y):
         print(f"Calculating error -> {label}...")
-        self.params[label] = mean_squared_error(y, self.predict(x)) / 2
+        l = np.where(self.predict(x) != y.T, 1, 0)
+        list_sum = np.sum(l)
+        list_size = max(l.shape)
+        self.params[label] = list_sum / list_size
         print(f"{label}->{self.params[label]}\n")
 
     def generate_report(self, x, y):
@@ -86,17 +90,29 @@ class Classifier(metaclass=ABCMeta):
     def save_classifier(self, file_name=None):
         save_classifier_object(self, file_name if file_name is not None else self.name)
 
+    def measure_all_error(self, x_train, y_train, x_cv, y_cv, x_test, y_test):
+        params = dict(self.params)
+        for i in params:
+            if type(i) == str:
+                self.params.pop(i, None)
+        self.measure_error(ErrorLabel.TRAIN, x_train, y_train)
+        self.measure_error(ErrorLabel.CV, x_cv, y_cv)
+        self.measure_error(ErrorLabel.TEST, x_test, y_test)
+
     def startup(self, x_train, y_train, x_cv, y_cv, x_test, y_test):
         print(f"Starting {self.name}")
 
         self.train_model(x_train, y_train)
 
-        self.measure_error(ErrorLabel.TRAIN, x_train, y_train)
-        self.measure_error(ErrorLabel.CV, x_cv, y_cv)
-        self.measure_error(ErrorLabel.TEST, x_test, y_test)
+        self.measure_all_error(x_train, y_train, x_cv, y_cv, x_test, y_test)
+
         self.generate_report(x_test, y_test)
 
         self.save_classifier()
+
+    @abstractmethod
+    def plot(self, x, y):
+        pass
 
     def __repr__(self):
         return self.__str__()
@@ -118,6 +134,9 @@ class PolynomialSvm(Classifier):
         super().save_classifier(
             file_name if file_name is not None else f'{self.name}_C_{self.C}_degree_{self.degree}')
 
+    def plot(self, x, y):
+        pass
+
     def __str__(self):
         return super().__str__() + f"C->{self.C}\tdegree->{self.degree}\n"
 
@@ -137,6 +156,9 @@ class NeuralNetwork(Classifier):
             file_name if file_name is not None else f'{self.name}_alpha_{self.alpha}_'
                                                     f'hidden_size_{self.hidden_layer_sizes}_max_iter_{self.max_iter}')
 
+    def plot(self, x, y):
+        pass
+
     def __str__(self):
         return super().__str__() + f"alpha->{self.alpha}\thidden_layer_sizes->{self.hidden_layer_sizes}\tmax_iter->{self.max_iter}\n"
 
@@ -153,6 +175,9 @@ class LogisticRegression(Classifier):
     def save_classifier(self, file_name=None):
         super().save_classifier(
             file_name if file_name is not None else f'{self.name}_C_{self.C}_max_iter_{self.max_iter}')
+
+    def plot(self, x, y):
+        pass
 
     def __str__(self):
         return super().__str__() + f"C->{self.C}\tmax_iter->{self.max_iter}\n"
