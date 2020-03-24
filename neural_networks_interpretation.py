@@ -3,7 +3,7 @@ import json
 import numpy as np
 from utils import sigmoid, read_file
 
-RESULTS_DIR = "results/neural_networks/first_try/"
+RESULTS_DIR = "results/neural_networks/"
 
 
 def predict(theta1, theta2, X):
@@ -32,8 +32,8 @@ def predict(theta1, theta2, X):
 
 
 def main():
-	study_for = "lambda"
-	time_file_name = f"time_{study_for}.json"
+	study_for = "alpha"
+	time_file_name = f"time.json"   # _{study_for}
 
 	file_info = open(f"{RESULTS_DIR}{time_file_name}")
 	all_data = file_info.readlines()

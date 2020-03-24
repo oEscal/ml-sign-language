@@ -7,7 +7,6 @@ import numpy as np
 
 from utils import sigmoid, sigmoid_gradient, read_file
 
-
 PATH_SAVE = "results/neural_networks/"
 
 
@@ -87,9 +86,11 @@ def gradientDescentnn(X, y, initial_nn_params, alpha, num_iters, Lambda, input_l
 	J_history = []
 
 	for i in range(num_iters):
+		if i % 10 == 0:
+			print(i)
 		nn_params = np.append(Theta1.flatten(), Theta2.flatten())
-		cost, grad1, grad2 = nnCostFunction(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, Lambda)[
-		                     3:]
+		cost, grad1, grad2 = nnCostFunction(
+			nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, Lambda)[3:]
 		Theta1 = Theta1 - (alpha * grad1)
 		Theta2 = Theta2 - (alpha * grad2)
 		J_history.append(cost)
@@ -127,6 +128,7 @@ def main(args):
 
 	np.save(f"{PATH_SAVE}{args.theta1_file}_id{theta_file_id}", Theta1)
 	np.save(f"{PATH_SAVE}{args.theta2_file}_id{theta_file_id}", Theta2)
+	np.save(f"{PATH_SAVE}{args.history_file}_id{theta_file_id}", nnJ_history)
 
 	save_file = open(f"{PATH_SAVE}{args.time_file}", 'a')
 	save_file.write(json.dumps({
@@ -146,10 +148,11 @@ if __name__ == "__main__":
 
 	parser.add_argument("--Lambda", type=float, default=0.1)
 	parser.add_argument("--alpha", type=float, default=1.0)
-	parser.add_argument("--num_iterations", type=int, default=200)
+	parser.add_argument("--num_iterations", type=int, default=300)
 
 	parser.add_argument("--theta1_file", type=str, default="theta1")
 	parser.add_argument("--theta2_file", type=str, default="theta2")
+	parser.add_argument("--history_file", type=str, default="j_history")
 	parser.add_argument("--time_file", type=str, default="time.json")
 
 	parser.add_argument("--theta_file_id", type=int, default=random.randint(100, 100000))
