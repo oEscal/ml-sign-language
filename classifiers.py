@@ -7,7 +7,7 @@ import pickle
 
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression as LogisticRegression_sklearn
-from sklearn.metrics import classification_report, mean_squared_error
+from sklearn.metrics import classification_report, mean_squared_error, precision_score
 from abc import ABCMeta
 from sklearn.neural_network import MLPClassifier
 import numpy as np
@@ -85,8 +85,11 @@ class Classifier(metaclass=ABCMeta):
     def save_history(self, file_name="history"):
         save_object(self.history, file_name)
 
-    def generate_report(self):
-        return classification_report(y_true=self.y, y_pred=self.predict(self.X))
+    def generate_report(self, X, y):
+        return classification_report(y_true=y, y_pred=self.predict(X))
+    
+    def precision(self, X, y):
+        return precision_score(y_true=y, y_pred=self.predict(X), average='micro', zero_division=1)
 
     def save_report(self, file_name="report.json"):
         with open(file_name, 'w') as file:
@@ -121,8 +124,8 @@ class PolynomialSvm(Classifier):
 
 
 class NeuralNetwork(Classifier):
-    def __init__(self, X, y, alpha, Lambda, hidden_layer_sizes, max_iter, activation, solver="sgd", variation_param=None,
-                 verbose=False):
+    def __init__(self, X, y, alpha, Lambda, hidden_layer_sizes, max_iter, activation, batch_size, solver="sgd",
+                variation_param=None, verbose=False):
         self.alpha = alpha
         self.hidden_layer_sizes = hidden_layer_sizes
         self.max_iter = max_iter
@@ -130,7 +133,8 @@ class NeuralNetwork(Classifier):
         super().__init__(self.__class__.__name__,
                          MLPClassifier(alpha=Lambda, learning_rate_init=alpha, activation=activation,
                                        hidden_layer_sizes=self.hidden_layer_sizes, solver=solver,
-                                       max_iter=max_iter, verbose=verbose), X, y, self.variation_param)
+                                       max_iter=max_iter, verbose=verbose, n_iter_no_change=10000, batch_size=batch_size),
+                         X, y, self.variation_param)
 
     def save_classifier(self, file_name=None):
         super().save_classifier(

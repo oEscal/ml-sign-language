@@ -1,7 +1,14 @@
 import json
+import pickle
 
 import numpy as np
+import matplotlib.pyplot as plt
+
+from classifiers import Classifier
 from utils import sigmoid, read_file
+
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 RESULTS_DIR = "results/neural_networks/"
 
@@ -41,18 +48,35 @@ def main():
 
 	all_data = [json.loads(line.replace('\n', '')) for line in all_data]
 
-	X, y = read_file("dataset/sign_mnist_train.csv")
+	X, y = read_file("dataset/sign_mnist_cv.csv")
 	m = X.shape[0]
 
+	precision = []
+	cost_plot = plt.figure(1)
 	for data in all_data:
-		id = data['theta_file_id']
+		id = data['file_id']
 
-		theta1 = np.load(f"{RESULTS_DIR}theta1_id{id}.npy")
-		theta2 = np.load(f"{RESULTS_DIR}theta2_id{id}.npy")
+		with open(f"{RESULTS_DIR}classifier_id{id}", 'rb') as file:
+			classifier: Classifier = pickle.load(file)
+		precision.append((data[study_for], classifier.precision(X, y)))
+		print(f"Precision for {study_for}={data[study_for]}: {classifier.precision(X, y)}")
+		plt.plot(classifier.history.loss_curve_)
+	
+	plt.legend([f"{study_for}={data[study_for]}" for data in all_data])
+	cost_plot.savefig("ola.png")
 
-		pred = predict(theta1, theta2, X)
-		print(f"Training Set Accuracy for {study_for}={data[study_for]}:", sum(pred[:, np.newaxis] == y)[0] / m * 100,
-		      "%")
+	precision_plot = plt.figure(2)
+	precision.sort(key=lambda x: x[0])
+	plt.plot([p[0] for p in precision], [p[1] for p in precision], marker='o')
+	plt.title("Precision for a range of alpha")
+	plt.xlabel('alpha')
+	plt.ylabel('precision')
+	for p in precision[:3]:
+		plt.annotate(f"{(p[0], p[1])}", xy=(p[0] + 0.005, p[1] + 0.005))
+	precision_plot.savefig("adeus.png")
+
+		# print(f"Training Set Accuracy for {study_for}={data[study_for]}:", sum(pred[:, np.newaxis] == y)[0] / m * 100,
+		#       "%")
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ PATH_SAVE = "results/neural_networks/"
 
 
 def main(args):
-	theta_file_id = args.theta_file_id
+	file_id = args.theta_file_id
 
 	X, y = read_file("dataset/sign_mnist_train.csv")
 	time_init = time.time()
@@ -23,11 +23,12 @@ def main(args):
 	Lambda = args.Lambda
 	num_iterations = args.num_iterations
 	activation = "logistic"
+	batch_size = 10
 
 	classifier = NeuralNetwork(X=X, y=y.ravel(), alpha=alpha, Lambda=Lambda, hidden_layer_sizes=(hidden_layer_size,),
-	                           activation=activation, max_iter=num_iterations)
+	                           activation=activation, max_iter=num_iterations, batch_size=batch_size)
 	classifier.train()
-	classifier.save_classifier(f"{PATH_SAVE}{args.classifier_file}_id{theta_file_id}")
+	classifier.save_classifier(f"{PATH_SAVE}{args.classifier_file}_id{file_id}")
 #
 	save_file = open(f"{PATH_SAVE}{args.time_file}", 'a')
 	save_file.write(json.dumps({
@@ -35,7 +36,9 @@ def main(args):
 		'alpha': alpha,
 		'lambda': Lambda,
 		'num_iterations': num_iterations,
-		'theta_file_id': theta_file_id,
+		'file_id': file_id,
+		'batch_size': batch_size,
+		'activation': activation,
 		'time': time.time() - time_init
 	}))
 	save_file.write("\n")
