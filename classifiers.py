@@ -23,7 +23,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def get_bests_classifier(path):
+def get_classifiers(path):
     folders = [f for f in listdir(path)]
     classifiers = {}
 
@@ -33,7 +33,7 @@ def get_bests_classifier(path):
 
         for file_name in [f for f in listdir(folder_path)]:
             file_path = f"{folder_path}/{file_name}"
-            
+
             with open(file_path, 'rb') as output:
                 classifier = pickle.load(output)
                 classifiers[folder_name].append(classifier)
@@ -113,6 +113,9 @@ class PolynomialSvm(Classifier):
         super().save_classifier(
             file_name if file_name is not None else f'{self.name}_C_{self.C}_degree_{self.degree}')
 
+    def plot(self, x, y):
+        pass
+
     def __str__(self):
         return super().__str__() + f"C->{self.C}\tdegree->{self.degree}\n"
 
@@ -134,6 +137,9 @@ class NeuralNetwork(Classifier):
             file_name if file_name is not None else f'{self.name}_alpha_{self.alpha}_'
                                                     f'hidden_size_{self.hidden_layer_sizes}_max_iter_{self.max_iter}')
 
+    def plot(self, x, y):
+        pass
+
     def __str__(self):
         return super().__str__() + f"alpha->{self.alpha}\thidden_layer_sizes->{self.hidden_layer_sizes}\tmax_iter->{self.max_iter}\n"
 
@@ -151,39 +157,8 @@ class LogisticRegression(Classifier):
         super().save_classifier(
             file_name if file_name is not None else f'{self.name}_C_{self.C}_max_iter_{self.max_iter}')
 
+    def plot(self, x, y):
+        pass
+
     def __str__(self):
         return super().__str__() + f"C->{self.C}\tmax_iter->{self.max_iter}\n"
-
-    """
-    class GaussianSvm:
-        def __init__(self, C, gamma):
-            self.svc = svm.SVC(kernel='rbf', C=C, probability=True, gamma=gamma, verbose=2)
-            self.train_score = 0
-            self.test_score = 0
-            self.cross_validation_score = 0
-            self.report = None
-    
-        def train_model(self, x, y, train_score=True):
-            logger.info("Training model")
-            self.svc.fit(x, y)
-    
-            if train_score:
-                self.train_score = accuracy_score(y, self.svc.predict(x))
-    
-        def cross_validation(self, x, y):
-            logger.info("Cross validation")
-            self.cross_validation_score = accuracy_score(y, self.svc.predict(x))
-    
-        def predict(self, x, y):
-            logger.info("Predict")
-            predict_list = self.svc.predict(x)
-            self.test_score = accuracy_score(y, predict_list)
-            self.report = classification_report(y, predict_list)
-    
-        def save_report(self, file_name=None):
-            save_classifier(self, file_name if file_name is not None else self.__class__.__name__)
-    
-        def __str__(self):
-            return f"{self.__class__.__name__}\n\tTrain Score: {self.train_score}\n\tCv Score: {self.cross_validation_score}\n\t" \
-                   f"Train Score: {self.test_score}\nReport: {self.report}\n"
-    """

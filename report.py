@@ -1,9 +1,11 @@
-from utils import read_file
+from os import listdir
+
+from utils import read_file, represent_data_graphically
 import numpy as np
 import matplotlib.pyplot as plt
 
 from pylab import title, figure, xlabel, ylabel, xticks, bar, legend, axis, savefig
-from classifiers import get_bests_classifier
+from classifiers import get_classifiers, save_best_param
 
 
 def plot_image(img, file_name=None, show=False):
@@ -40,21 +42,27 @@ def plot_label_frequencies(labels, term, file_name=None, show=False):
 
 
 def main():
-    """
     x_train, y_train = read_file('dataset/sign_mnist_train.csv')
+    x_cv, y_cv = read_file('dataset/sign_mnist_cv.csv')
     x_test, y_test = read_file('dataset/sign_mnist_test.csv')
 
-    plot_label_frequencies(y_train, "Train set")
-    plot_label_frequencies(y_test, "Test set")
+    # plot_label_frequencies(y_train, "Train set")
+    # plot_label_frequencies(y_test, "Test set")
 
-    plot_image(x_train[0])
-    """
+    # plot_image(x_train[0])
 
-    best_classifiers = get_bests_classifier("best_param_classifiers")
+    # best_classifiers = get_bests_classifier("best_param_classifiers")
 
-    for classifier_list in best_classifiers.values():
+    # represent_data_graphically(x_train, 'graficos/ok.png')
+
+    classifiers = get_classifiers("best_param_classifiers")
+
+    for name, classifier_list in classifiers.items():
+        print(name)
         for classifier in classifier_list:
             print(classifier)
+
+        save_best_param(classifier_list)
 
 
 if __name__ == '__main__':
