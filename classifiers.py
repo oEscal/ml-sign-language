@@ -1,32 +1,26 @@
-from sklearn import svm
-from pathlib import Path
-import pickle
+import sys
 from enum import Enum, unique
+from os import listdir
+import logging
+import json
+import pickle
 
+from sklearn import svm
 from sklearn.linear_model import LogisticRegression as LogisticRegression_sklearn
 from sklearn.metrics import classification_report, mean_squared_error
-from abc import abstractmethod, ABCMeta
+from abc import ABCMeta
 from sklearn.neural_network import MLPClassifier
-from os import listdir
-from os.path import isfile, join
+import numpy as np
+
+from utils import save_object
 
 
-def save_classifier_object(classifier, file_name):
-    path = f"classifiers_/{classifier.name}_{classifier.variation_param}"
-    Path(path).mkdir(parents=True, exist_ok=True)  # if folder doesnt exists, crete one
-
-    with open(f"{path}/{file_name}", 'wb') as output:
-        pickle.dump(classifier, output)
-
-
-def save_best_param(classifier_list):
-    best_classifier = sorted(classifier_list, key=lambda c: (
-        c.params[ErrorLabel.CV], c.params[ErrorLabel.TEST], c.params[ErrorLabel.TRAIN]))[0]
-    path = f"best_param_classifiers/{best_classifier.name}"
-
-    Path(path).mkdir(parents=True, exist_ok=True)  # if folder doesnt exists, crete one
-    with open(f"{path}/{best_classifier.variation_param}", 'wb') as output:
-        pickle.dump(best_classifier, output)
+logger = logging.getLogger("classifiers")
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 def get_bests_classifier(path):
@@ -58,45 +52,46 @@ class ErrorLabel(Enum):
 
 
 class Classifier(metaclass=ABCMeta):
-    def __init__(self, name, classifier, variation_param):
+    def __init__(self, name, classifier: MLPClassifier, X: np.ndarray, y: np.ndarray, variation_param=None):
         self.name = name
         self.classifier = classifier
-        self.report = None
         self.params = {}
         self.variation_param = variation_param
 
-    def train_model(self, x, y):
-        print("Training model...")
-        self.classifier.fit(x, y)
+        self.X: np.ndarray = X
+        self.y: np.ndarray = y
+
+        self.history: MLPClassifier = None
+
+    def __train_model(self, x, y):
+        logger.info("Training model...")
+        return self.classifier.fit(x, y)
 
     def predict(self, x):
-        print("Predicting...")
+        logger.info("Predicting...")
         return self.classifier.predict(x)
 
-    def measure_error(self, label, x, y):
-        print(f"Calculating error -> {label}...")
-        self.params[label] = mean_squared_error(y, self.predict(x)) / 2
-        print(f"{label}->{self.params[label]}\n")
+    def error(self, x, y):
+        logger.info(f"Calculating error")
+        return mean_squared_error(y, self.predict(x)) / 2
 
-    def generate_report(self, x, y):
-        print("Generating report:")
-        self.report = classification_report(y, self.predict(x))
-        print(self.report + '\n')
+    def train(self):
+        logger.info(f"Starting train: {self.name}")
+        self.history = self.__train_model(self.X, self.y)
 
-    def save_classifier(self, file_name=None):
-        save_classifier_object(self, file_name if file_name is not None else self.name)
+    def save_classifier(self, file_name="classifier"):
+        save_object(self, file_name)
 
-    def startup(self, x_train, y_train, x_cv, y_cv, x_test, y_test):
-        print(f"Starting {self.name}")
+    def save_history(self, file_name="history"):
+        save_object(self.history, file_name)
 
-        self.train_model(x_train, y_train)
+    def generate_report(self):
+        return classification_report(y_true=self.y, y_pred=self.predict(self.X))
 
-        self.measure_error(ErrorLabel.TRAIN, x_train, y_train)
-        self.measure_error(ErrorLabel.CV, x_cv, y_cv)
-        self.measure_error(ErrorLabel.TEST, x_test, y_test)
-        self.generate_report(x_test, y_test)
-
-        self.save_classifier()
+    def save_report(self, file_name="report.json"):
+        with open(file_name, 'w') as file:
+            file.write(json.dumps(self.generate_report()))
+        logger.info(f"Report saved into file: {file_name}")
 
     def __repr__(self):
         return self.__str__()
@@ -123,14 +118,16 @@ class PolynomialSvm(Classifier):
 
 
 class NeuralNetwork(Classifier):
-    def __init__(self, alpha, hidden_layer_sizes, max_iter, variation_param, verbose=False):
+    def __init__(self, X, y, alpha, Lambda, hidden_layer_sizes, max_iter, activation, solver="sgd", variation_param=None,
+                 verbose=False):
         self.alpha = alpha
         self.hidden_layer_sizes = hidden_layer_sizes
         self.max_iter = max_iter
         self.variation_param = variation_param
         super().__init__(self.__class__.__name__,
-                         MLPClassifier(alpha=self.alpha, hidden_layer_sizes=self.hidden_layer_sizes,
-                                       max_iter=max_iter, verbose=verbose), self.variation_param)
+                         MLPClassifier(alpha=Lambda, learning_rate_init=alpha, activation=activation,
+                                       hidden_layer_sizes=self.hidden_layer_sizes, solver=solver,
+                                       max_iter=max_iter, verbose=verbose), X, y, self.variation_param)
 
     def save_classifier(self, file_name=None):
         super().save_classifier(
@@ -167,18 +164,18 @@ class LogisticRegression(Classifier):
             self.report = None
     
         def train_model(self, x, y, train_score=True):
-            print("Training model")
+            logger.info("Training model")
             self.svc.fit(x, y)
     
             if train_score:
                 self.train_score = accuracy_score(y, self.svc.predict(x))
     
         def cross_validation(self, x, y):
-            print("Cross validation")
+            logger.info("Cross validation")
             self.cross_validation_score = accuracy_score(y, self.svc.predict(x))
     
         def predict(self, x, y):
-            print("Predict")
+            logger.info("Predict")
             predict_list = self.svc.predict(x)
             self.test_score = accuracy_score(y, predict_list)
             self.report = classification_report(y, predict_list)
