@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from pylab import title, figure, xlabel, ylabel, xticks, bar, legend, axis, savefig
-from classifiers import get_classifiers, save_best_param
+from classifiers import get_classifiers
 
 
 def plot_image(img, file_name=None, show=False):
@@ -46,8 +46,9 @@ def main():
     x_cv, y_cv = read_file('dataset/sign_mnist_cv.csv')
     x_test, y_test = read_file('dataset/sign_mnist_test.csv')
 
-    # plot_label_frequencies(y_train, "Train set")
-    # plot_label_frequencies(y_test, "Test set")
+    plot_label_frequencies(y_train, "Train set", file_name='hist_training.png')
+    plot_label_frequencies(y_cv, "Cross Validation set", file_name='hist_cv.png')
+    plot_label_frequencies(y_test, "Test set", file_name='hist_test.png')
 
     # plot_image(x_train[0])
 
@@ -55,14 +56,14 @@ def main():
 
     # represent_data_graphically(x_train, 'graficos/ok.png')
 
-    classifiers = get_classifiers("best_param_classifiers")
-
-    for name, classifier_list in classifiers.items():
-        print(name)
-        for classifier in classifier_list:
-            print(classifier)
-
-        save_best_param(classifier_list)
+    # classifiers = get_classifiers("best_param_classifiers")
+#
+    # for name, classifier_list in classifiers.items():
+    #     print(name)
+    #     for classifier in classifier_list:
+    #         print(classifier)
+#
+    #     save_best_param(classifier_list)
 
 
 if __name__ == '__main__':

@@ -49,7 +49,6 @@ def main():
 	all_data = [json.loads(line.replace('\n', '')) for line in all_data]
 
 	X, y = read_file("dataset/sign_mnist_cv.csv")
-	m = X.shape[0]
 
 	precision = []
 	cost_plot = plt.figure(1)
@@ -58,25 +57,26 @@ def main():
 
 		with open(f"{RESULTS_DIR}classifier_id{id}", 'rb') as file:
 			classifier: Classifier = pickle.load(file)
-		precision.append((data[study_for], classifier.precision(X, y)))
-		print(f"Precision for {study_for}={data[study_for]}: {classifier.precision(X, y)}")
+		precision.append((data[study_for], classifier.accuracy(X, y)))
+		print(f"Accuracy for {study_for}={data[study_for]}: {classifier.accuracy(X, y)}")
+
+		matrix = classifier.confusion_matrix(X, y)
+		print(matrix.diagonal() / matrix.sum(axis=1))
+
 		plt.plot(classifier.history.loss_curve_)
 	
 	plt.legend([f"{study_for}={data[study_for]}" for data in all_data])
-	cost_plot.savefig("ola.png")
+	cost_plot.savefig(f"{study_for}_cost.png")
 
 	precision_plot = plt.figure(2)
 	precision.sort(key=lambda x: x[0])
 	plt.plot([p[0] for p in precision], [p[1] for p in precision], marker='o')
-	plt.title("Precision for a range of alpha")
+	plt.title("Accuracy for a range of alpha")
 	plt.xlabel('alpha')
-	plt.ylabel('precision')
+	plt.ylabel('accuracy')
 	for p in precision[:3]:
 		plt.annotate(f"{(p[0], p[1])}", xy=(p[0] + 0.005, p[1] + 0.005))
-	precision_plot.savefig("adeus.png")
-
-		# print(f"Training Set Accuracy for {study_for}={data[study_for]}:", sum(pred[:, np.newaxis] == y)[0] / m * 100,
-		#       "%")
+	precision_plot.savefig(f"{study_for}_accuracy.png")
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ import pickle
 
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression as LogisticRegression_sklearn
-from sklearn.metrics import classification_report, mean_squared_error, precision_score
+from sklearn.metrics import classification_report, mean_squared_error, precision_score, confusion_matrix, accuracy_score
 from abc import ABCMeta
 from sklearn.neural_network import MLPClassifier
 import numpy as np
@@ -65,7 +65,7 @@ class Classifier(metaclass=ABCMeta):
 
     def __train_model(self, x, y):
         logger.info("Training model...")
-        return self.classifier.fit(x, y)
+        return self.classifier._fit(x, y)
 
     def predict(self, x):
         logger.info("Predicting...")
@@ -75,7 +75,12 @@ class Classifier(metaclass=ABCMeta):
         logger.info(f"Calculating error")
         return mean_squared_error(y, self.predict(x)) / 2
 
-    def train(self):
+    def set_new_number_iter(self, iterations):
+        self.classifier.max_iter = iterations
+
+    def train(self, from_previous=False):
+        self.classifier.warm_start = from_previous
+
         logger.info(f"Starting train: {self.name}")
         self.history = self.__train_model(self.X, self.y)
 
@@ -88,8 +93,14 @@ class Classifier(metaclass=ABCMeta):
     def generate_report(self, X, y):
         return classification_report(y_true=y, y_pred=self.predict(X))
     
-    def precision(self, X, y):
-        return precision_score(y_true=y, y_pred=self.predict(X), average='micro', zero_division=1)
+    def precision(self, X, y, average=None):
+        return precision_score(y_true=y, y_pred=self.predict(X), average=average, zero_division=1)
+
+    def accuracy(self, X, y):
+        return accuracy_score(y_true=y, y_pred=self.predict(X))
+
+    def confusion_matrix(self, X, y):
+        return confusion_matrix(y_true=y, y_pred=self.predict(X))
 
     def save_report(self, file_name="report.json"):
         with open(file_name, 'w') as file:
@@ -124,16 +135,17 @@ class PolynomialSvm(Classifier):
 
 
 class NeuralNetwork(Classifier):
-    def __init__(self, X, y, alpha, Lambda, hidden_layer_sizes, max_iter, activation, batch_size, solver="sgd",
-                variation_param=None, verbose=False):
+    def __init__(self, X, y, alpha, Lambda, hidden_layer_sizes, iterations, activation, batch_size, solver="sgd",
+                 variation_param=None, verbose=False):
         self.alpha = alpha
         self.hidden_layer_sizes = hidden_layer_sizes
-        self.max_iter = max_iter
+        self.max_iter = iterations
         self.variation_param = variation_param
         super().__init__(self.__class__.__name__,
                          MLPClassifier(alpha=Lambda, learning_rate_init=alpha, activation=activation,
                                        hidden_layer_sizes=self.hidden_layer_sizes, solver=solver,
-                                       max_iter=max_iter, verbose=verbose, n_iter_no_change=10000, batch_size=batch_size),
+                                       max_iter=iterations, verbose=verbose, n_iter_no_change=iterations,
+                                       batch_size=batch_size),
                          X, y, self.variation_param)
 
     def save_classifier(self, file_name=None):
