@@ -42,13 +42,13 @@ def plot_label_frequencies(labels, term, file_name=None, show=False):
 
 
 def main():
-    x_train, y_train = read_file('dataset/sign_mnist_train.csv')
-    x_cv, y_cv = read_file('dataset/sign_mnist_cv.csv')
-    x_test, y_test = read_file('dataset/sign_mnist_test.csv')
+    x_train, y_train = read_file('dataset/merged_train_set.csv')
+    x_cv, y_cv = read_file('dataset/merged_cv_set.csv')
+    x_test, y_test = read_file('dataset/merged_test_set.csv')
 
-    plot_label_frequencies(y_train, "Train set", file_name='hist_training.png')
-    plot_label_frequencies(y_cv, "Cross Validation set", file_name='hist_cv.png')
-    plot_label_frequencies(y_test, "Test set", file_name='hist_test.png')
+    plot_label_frequencies(y_train, "Train set", file_name='graficos/hist_training.png')
+    plot_label_frequencies(y_cv, "Cross Validation set", file_name='graficos/hist_cv.png')
+    plot_label_frequencies(y_test, "Test set", file_name='graficos/hist_test.png')
 
     # plot_image(x_train[0])
 
@@ -57,13 +57,15 @@ def main():
     # represent_data_graphically(x_train, 'graficos/ok.png')
 
     # classifiers = get_classifiers("best_param_classifiers")
+
+
 #
-    # for name, classifier_list in classifiers.items():
-    #     print(name)
-    #     for classifier in classifier_list:
-    #         print(classifier)
+# for name, classifier_list in classifiers.items():
+#     print(name)
+#     for classifier in classifier_list:
+#         print(classifier)
 #
-    #     save_best_param(classifier_list)
+#     save_best_param(classifier_list)
 
 
 if __name__ == '__main__':
