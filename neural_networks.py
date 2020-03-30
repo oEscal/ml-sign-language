@@ -15,10 +15,10 @@ PATH_SAVE = "results/neural_networks/"
 def main(args):
 	file_id = args.file_id
 
-	X, y = read_file("dataset/sign_mnist_train.csv")
+	X, y = read_file("dataset/merged_train_set.csv")
 
 	# layer sizes
-	hidden_layer_size = 50
+	hidden_layer_size = args.hidden_layer_size
 
 	alpha = args.alpha  # learning rate
 	Lambda = args.Lambda
@@ -30,7 +30,7 @@ def main(args):
 
 	time_init = time.time()
 	if from_classifier_id:
-		X_cv, y_cv = read_file("dataset/sign_mnist_cv.csv")
+		X_cv, y_cv = read_file("dataset/merged_cv_set.csv")
 		X, y = np.append(X, X_cv, axis=0), np.append(y, y_cv, axis=0)
 
 		with open(f"{PATH_SAVE}classifier_id{from_classifier_id}", 'rb') as file:
@@ -70,6 +70,7 @@ if __name__ == "__main__":
 	parser.add_argument("--Lambda", type=float, default=0)
 	parser.add_argument("--alpha", type=float, default=1.0)
 	parser.add_argument("--num_iterations", type=int, default=200)
+	parser.add_argument("--hidden_layer_size", type=int, default=50)
 
 	parser.add_argument("--classifier_file", type=str, default="classifier")
 	parser.add_argument("--time_file", type=str, default="time.json")
