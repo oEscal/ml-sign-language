@@ -14,7 +14,6 @@ import numpy as np
 
 from utils import save_object
 
-
 logger = logging.getLogger("classifiers")
 logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler(sys.stdout)
@@ -92,15 +91,16 @@ class Classifier(metaclass=ABCMeta):
 
     def generate_report(self, X, y):
         return classification_report(y_true=y, y_pred=self.predict(X))
-    
+
     def precision(self, X, y, average=None):
         return precision_score(y_true=y, y_pred=self.predict(X), average=average, zero_division=1)
 
     def accuracy(self, X, y):
         return accuracy_score(y_true=y, y_pred=self.predict(X))
 
-    def confusion_matrix(self, X, y):
-        return confusion_matrix(y_true=y, y_pred=self.predict(X))
+    def confusion_matrix(self, X, y, label='confusion_matrix'):
+        self.params[label] = confusion_matrix(y_true=y, y_pred=self.predict(X))
+        return self.params[label]
 
     def save_report(self, file_name="report.json"):
         with open(file_name, 'w') as file:
@@ -125,7 +125,7 @@ class PolynomialSvm(Classifier):
 
     def save_classifier(self, file_name=None):
         super().save_classifier(
-            file_name if file_name is not None else f'{self.name}_C_{self.C}_degree_{self.degree}')
+            file_name if file_name is not None else f'classifiers/{self.name}_C_{self.C}_degree_{self.degree}')
 
     def plot(self, x, y):
         pass
@@ -144,13 +144,13 @@ class NeuralNetwork(Classifier):
         super().__init__(self.__class__.__name__,
                          MLPClassifier(alpha=Lambda, learning_rate_init=alpha, activation=activation,
                                        hidden_layer_sizes=self.hidden_layer_sizes, solver=solver,
-                                       max_iter=iterations, verbose=verbose, n_iter_no_change=iterations,
+                                       max_iter=iterations, verbose=verbose, n_iter_no_change=10,
                                        batch_size=batch_size),
                          X, y, self.variation_param)
 
     def save_classifier(self, file_name=None):
         super().save_classifier(
-            file_name if file_name is not None else f'{self.name}_alpha_{self.alpha}_'
+            file_name if file_name is not None else f'classifiers/{self.name}_alpha_{self.alpha}_'
                                                     f'hidden_size_{self.hidden_layer_sizes}_max_iter_{self.max_iter}')
 
     def plot(self, x, y):
@@ -171,7 +171,7 @@ class LogisticRegression(Classifier):
 
     def save_classifier(self, file_name=None):
         super().save_classifier(
-            file_name if file_name is not None else f'{self.name}_C_{self.C}_max_iter_{self.max_iter}')
+            file_name if file_name is not None else f'classifiers/{self.name}_C_{self.C}_max_iter_{self.max_iter}')
 
     def plot(self, x, y):
         pass
