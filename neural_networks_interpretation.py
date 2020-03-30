@@ -48,7 +48,7 @@ def main():
 
 	all_data = [json.loads(line.replace('\n', '')) for line in all_data]
 
-	X, y = read_file("dataset/sign_mnist_cv.csv")
+	X, y = read_file("dataset/merged_cv_set.csv")
 
 	precision = []
 	cost_plot = plt.figure(1)
