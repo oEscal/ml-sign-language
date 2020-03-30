@@ -8,7 +8,7 @@ TRAIN_DEST_FILE = f"{DATASET_DIR}merged_train_set.csv"
 CV_DEST_FILE = f"{DATASET_DIR}merged_cv_set.csv"
 TEST_DEST_FILE = f"{DATASET_DIR}merged_test_set.csv"
 
-SPLIT_DIST = [70, 20, 20]        # distribution to each dataset: [train, cv, test]
+SPLIT_DIST = [60, 20, 20]        # distribution to each dataset: [train, cv, test]
 
 all_data = []
 for file_name in ORIGIN_FILES:
