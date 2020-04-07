@@ -24,7 +24,7 @@ def read_file(path_file: str, shuffle=False) -> (np.ndarray, np.ndarray):
     if shuffle:
         np.random.shuffle(data)
 
-    return data[:, 1:], data[:, 0].reshape(data.shape[0], 1)
+    return data[:, 0:], data[:, 0].reshape(data.shape[0], 1)
 
 
 def represent_data_graphically(data: np.ndarray, file_save: str, rows: int = 10, cols: int = 10):
