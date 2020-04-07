@@ -28,8 +28,9 @@ def get_classifiers(path):
 
     for folder_name in folders:
         folder_path = f"{path}/{folder_name}"
+        if folder_name == 'others':
+            continue
         classifiers[folder_name] = []
-
         for file_name in [f for f in listdir(folder_path)]:
             file_path = f"{folder_path}/{file_name}"
 
@@ -40,18 +41,27 @@ def get_classifiers(path):
     return classifiers
 
 
+def save_best_classifiers(classifiers_list, file_name='best_classifiers'):
+    best = sorted(classifiers_list, reverse=True,
+                  key=lambda c: (c.params[str(Label.CV)], c.params[str(Label.TRAIN)], c.params[str(Label.TEST)]))[0]
+
+    save_object(best, f'{file_name}/{best.name}/{best.variation_param}')
+
+    return best
+
+
 @unique
-class ErrorLabel(Enum):
-    TEST = "Test set error"
-    CV = "Cross validation error"
-    TRAIN = "Train set error"
+class Label(Enum):
+    TEST = "accuracy train set"
+    CV = "accuracy cv set"
+    TRAIN = "accuracy test set"
 
     def __str__(self):
         return self.value
 
 
 class Classifier(metaclass=ABCMeta):
-    def __init__(self, name, classifier: MLPClassifier, X: np.ndarray, y: np.ndarray, variation_param=None):
+    def __init__(self, name, classifier, X: np.ndarray, y: np.ndarray, variation_param=None):
         self.name = name
         self.classifier = classifier
         self.params = {}
@@ -60,11 +70,14 @@ class Classifier(metaclass=ABCMeta):
         self.X: np.ndarray = X
         self.y: np.ndarray = y
 
-        self.history: MLPClassifier = None
+        self.history = None
+
+        self.train_scores = None
+        self.valid_scores = None
 
     def __train_model(self, x, y):
         logger.info("Training model...")
-        return self.classifier._fit(x, y)
+        return self.classifier.fit(x, y)
 
     def predict(self, x):
         logger.info("Predicting...")
@@ -78,7 +91,8 @@ class Classifier(metaclass=ABCMeta):
         self.classifier.max_iter = iterations
 
     def train(self, from_previous=False):
-        self.classifier.warm_start = from_previous
+        if from_previous:
+            self.classifier.warm_start = from_previous
 
         logger.info(f"Starting train: {self.name}")
         self.history = self.__train_model(self.X, self.y)
@@ -95,18 +109,25 @@ class Classifier(metaclass=ABCMeta):
     def precision(self, X, y, average=None):
         return precision_score(y_true=y, y_pred=self.predict(X), average=average, zero_division=1)
 
-    def accuracy(self, X, y):
-        return accuracy_score(y_true=y, y_pred=self.predict(X))
+    def accuracy(self, X, y, label='accuracy'):
+        self.params[label] = accuracy_score(y_true=y, y_pred=self.predict(X))
+        return self.params[label]
 
     def confusion_matrix(self, X, y, label='confusion_matrix'):
         self.params[label] = confusion_matrix(y_true=y, y_pred=self.predict(X))
         return self.params[label]
 
+    def update_params(self, **kwargs):
+        for key, value in kwargs.items():
+            self.params[key] = value
+        logger.info(f"Params updated with {kwargs}")
+        return self.params
+
     def save_report(self, file_name="report.json"):
         with open(file_name, 'w') as file:
             file.write(json.dumps(self.generate_report()))
         logger.info(f"Report saved into file: {file_name}")
-
+    
     def __repr__(self):
         return self.__str__()
 
@@ -115,23 +136,22 @@ class Classifier(metaclass=ABCMeta):
 
 
 class PolynomialSvm(Classifier):
-    def __init__(self, C, degree, variation_param, verbose=False):
-        self.C = C
-        self.degree = degree
+    def __init__(self, classifier, X, y, variation_param):
+        self.X = X
+        self.y = y
+        # self.C = C
+        # self.degree = degree
+        self.classifier = classifier
         self.variation_param = variation_param
-        super().__init__(self.__class__.__name__,
-                         svm.SVC(kernel='poly', C=self.C, probability=True, degree=self.degree, verbose=verbose),
-                         self.variation_param)
+        super().__init__(self.__class__.__name__, classifier, self.X, self.y, self.variation_param)
 
     def save_classifier(self, file_name=None):
         super().save_classifier(
-            file_name if file_name is not None else f'classifiers/{self.name}_C_{self.C}_degree_{self.degree}')
-
-    def plot(self, x, y):
-        pass
+            file_name if file_name is not None else f'classifiers/{self.name}_{self.variation_param}/'
+                                                    f'{eval(f"self.classifier.{self.variation_param}")}.classifier')
 
     def __str__(self):
-        return super().__str__() + f"C->{self.C}\tdegree->{self.degree}\n"
+        return super().__str__()  # + f"C->{self.C}\tdegree->{self.degree}\n"
 
 
 class NeuralNetwork(Classifier):
@@ -153,28 +173,24 @@ class NeuralNetwork(Classifier):
             file_name if file_name is not None else f'classifiers/{self.name}_alpha_{self.alpha}_'
                                                     f'hidden_size_{self.hidden_layer_sizes}_max_iter_{self.max_iter}')
 
-    def plot(self, x, y):
-        pass
-
     def __str__(self):
         return super().__str__() + f"alpha->{self.alpha}\thidden_layer_sizes->{self.hidden_layer_sizes}\tmax_iter->{self.max_iter}\n"
 
 
 class LogisticRegression(Classifier):
-    def __init__(self, C, max_iter, variation_param, verbose=False):
-        self.C = C
-        self.max_iter = max_iter
+    def __init__(self, classifier, X, y, variation_param):
+        self.X = X
+        self.y = y
+        # self.C = C
+        # self.max_iter = max_iter
         self.variation_param = variation_param
-        super().__init__(self.__class__.__name__,
-                         LogisticRegression_sklearn(C=C, verbose=verbose, max_iter=max_iter, n_jobs=-1),
-                         self.variation_param)
+        # LogisticRegression_sklearn(C=C, verbose=verbose, max_iter=max_iter, n_jobs=-1),
+        super().__init__(self.__class__.__name__, classifier, self.X, self.y, self.variation_param)
 
     def save_classifier(self, file_name=None):
         super().save_classifier(
-            file_name if file_name is not None else f'classifiers/{self.name}_C_{self.C}_max_iter_{self.max_iter}')
-
-    def plot(self, x, y):
-        pass
+            file_name if file_name is not None else f'classifiers/{self.name}_{self.variation_param}/'
+                                                    f'{eval(f"self.classifier.{self.variation_param}")}.classifier')  # _C_{self.C}_max_iter_{self.max_iter}')
 
     def __str__(self):
-        return super().__str__() + f"C->{self.C}\tmax_iter->{self.max_iter}\n"
+        return super().__str__()  # + f"C->{self.C}\tmax_iter->{self.max_iter}\n"
