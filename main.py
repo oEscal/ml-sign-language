@@ -1,9 +1,10 @@
 from classifiers import *
-from utils import read_file, plot_validation_curve
+from utils import read_file, plot_validation_curve, plot_time_per_parameter, plot_test_accuracy
 from utils import validation_curve
 
 from sklearn import svm
 from sklearn.model_selection import PredefinedSplit
+from sklearn.linear_model import LogisticRegression
 
 
 def f(filename, x, y):
@@ -62,19 +63,38 @@ def main():
         x_train[:100], y_train[:100], x_cv[:100], y_cv[:100], x_test[:100], y_test[:100], "C", C,
         "PolynomialSvm(classifier, x_train, y_train, parameter)")
 
+    set_validation_score_and_curve(
+        LogisticRegression(C=C[0], verbose=True, max_iter=1000, n_jobs=-1),
+        x_train[:100], y_train[:100], x_cv[:100], y_cv[:100], x_test[:100], y_test[:100], "C", C,
+        "LogisticRegression(classifier, x_train, y_train, parameter)")
+
     classifiers = get_classifiers("classifiers")
     for classifier_name, classifier_list in classifiers.items():
-        print(classifier_name)
+
         train_scores = []
         valid_scores = []
+        fit_times = []
+        score_times = []
+        tests_accuracy = []
+
         for classifier in classifier_list:
             train_scores.append(classifier.params['train_score'])
             valid_scores.append(classifier.params['valid_score'])
+            fit_times.append(classifier.params['fit_time'])
+            score_times.append(classifier.params['score_time'])
+            tests_accuracy.append(classifier.params['Test set Accuracy'])
 
         train_scores = np.array(train_scores)
         valid_scores = np.array(valid_scores)
+        fit_times = np.array(fit_times)
+        score_times = np.array(score_times)
+        tests_accuracy = np.array(tests_accuracy)
+
         plot_validation_curve(train_scores, valid_scores, f"Validation Curve with SVM Degree:{degrees[0]}",
                               "C", "Score", C)
+
+        plot_time_per_parameter(fit_times, score_times, "Time of fitting and scoring proccesses", "C", "Time (s)", C)
+        plot_test_accuracy(C, tests_accuracy, "Test set accuracy", "C", "Accuracy")
 
 
 if __name__ == '__main__':

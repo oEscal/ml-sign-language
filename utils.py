@@ -117,18 +117,13 @@ def validation_curve(estimator, X, y, param_name, param_range, groups=None,
 
 
 def plot_validation_curve(train_scores, test_scores, title, xlabel, ylabel, param_range):
-    train_scores_mean = np.mean(train_scores, axis=1)
-    train_scores_std = np.std(train_scores, axis=1)
-    test_scores_mean = np.mean(test_scores, axis=1)
-    test_scores_std = np.std(test_scores, axis=1)
-
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.ylim(0.0, 1.1)
 
-    plt.plot(param_range, train_scores, label="Training Score", color="blue")
-    plt.plot(param_range, test_scores, label="Cross-validation score", color="orange")
+    plt.semilogx(param_range, train_scores, label="Training Score", color="blue", marker="o")
+    plt.semilogx(param_range, test_scores, label="Cross-validation score", color="orange", marker="o")
 
     plt.legend(loc="best")
     plt.show()
@@ -139,4 +134,19 @@ def plot_time_per_parameter(fit_times, score_times, title, xlabel, ylabel, param
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
 
-    pass
+    plt.semilogx(param_range, fit_times, label="Fitting times", color="blue", marker="o")
+    plt.semilogx(param_range, score_times, label="Scoring times", color="orange", marker="o")
+
+    plt.legend(loc="best")
+    plt.show()
+
+
+def plot_test_accuracy(x_data, y_data, title, xlabel, ylabel):
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    
+    plt.semilogx(x_data, y_data, label="Test set accuracy", color="orange", marker="o")
+
+    plt.legend(loc="best")
+    plt.show()

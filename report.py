@@ -1,6 +1,6 @@
 from sklearn.model_selection import ShuffleSplit
 
-from utils import read_file, represent_data_graphically, plot_learning_curve
+from utils import read_file, represent_data_graphically
 import numpy as np
 import matplotlib.pyplot as plt
 
