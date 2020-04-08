@@ -164,7 +164,7 @@ class NeuralNetwork(Classifier):
         super().__init__(self.__class__.__name__,
                          MLPClassifier(alpha=Lambda, learning_rate_init=alpha, activation=activation,
                                        hidden_layer_sizes=self.hidden_layer_sizes, solver=solver,
-                                       max_iter=iterations, verbose=verbose, n_iter_no_change=10,
+                                       max_iter=iterations, verbose=verbose, n_iter_no_change=iterations,
                                        batch_size=batch_size),
                          X, y, self.variation_param)
 

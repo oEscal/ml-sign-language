@@ -21,8 +21,7 @@ def read_file(path_file: str, shuffle=False) -> (np.ndarray, np.ndarray):
     """Function to read datafile and returns a tuple with the following format: (X, y). X represents all the features
         and y represents all the outputs for each data example
     """
-
-    data = pd.read_csv(path_file, header=None, skiprows=0).values
+    data = pd.read_csv(path_file, header=None).values
     if shuffle:
         np.random.shuffle(data)
 
