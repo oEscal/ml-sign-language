@@ -56,6 +56,7 @@ def main():
     x_cv, y_cv = read_file('dataset/merged_cv_set.csv')
     x_test, y_test = read_file('dataset/merged_test_set.csv')
 
+    """
     import cv2
     im = cv2.imread("live_images/opencv_frame_0.png")
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
@@ -69,12 +70,17 @@ def main():
     new_img = np.array(new_img)
     #new_img = np.append((0,new_img))
     new_img = new_img.reshape(785,1)
+    """
 
     x_train = x_train / 255
     x_cv = x_cv / 255
     x_test = x_test / 255
 
-    """
+    print(x_train.shape)
+
+    # x_train, y_train, x_cv, y_cv, x_test, y_test = x_train[:100], y_train[:100], \
+    #                                                x_cv[:100], y_cv[:100], x_test[:100], y_test[:100]
+
     set_validation_score_and_curve(
         svm.SVC(kernel='rbf', C=C[0], probability=True, degree=degree[0], verbose=True),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
@@ -99,9 +105,8 @@ def main():
         LogisticRegressionSKlearn(C=C[0], verbose=True, max_iter=1000, n_jobs=-1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "max_iter", max_iter,
         "LogisticRegression(classifier, x_train, y_train, parameter)")
-    """
 
-    classifiers = get_classifiers("classifiers_shuffle")
+    classifiers = get_classifiers("classifiers")
     for classifier_name, classifier_list in classifiers.items():
 
         train_scores = []
@@ -117,15 +122,12 @@ def main():
             score_times.append(classifier.params['score_time'])
             tests_accuracy.append(classifier.params['Test set Accuracy'])
 
-            print(classifier.predict(new_img / 255))
-
         train_scores = np.array(train_scores)
         valid_scores = np.array(valid_scores)
         fit_times = np.array(fit_times)
         score_times = np.array(score_times)
         tests_accuracy = np.array(tests_accuracy)
 
-        """
         Path(f"graficos/{classifier_name}").mkdir(parents=True, exist_ok=True)
         plot_validation_curve(train_scores, valid_scores, f"Validation Curve with {classifier_name}",
                               classifier_list[0].variation_param, "Score", eval(classifier_list[0].variation_param),
@@ -138,7 +140,6 @@ def main():
         plot_test_accuracy(eval(classifier_list[0].variation_param), tests_accuracy,
                            f"Test set accuracy with {classifier_name}", classifier_list[0].variation_param, "Accuracy",
                            f"{classifier_name}/test_accuracy.png")
-    """
 
 
 if __name__ == '__main__':
