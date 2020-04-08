@@ -141,4 +141,6 @@ dataset/*
 results/
 classifiers/
 best_param_classifiers/
+classifiers_shuffle/
+graficos_shuffle/
 

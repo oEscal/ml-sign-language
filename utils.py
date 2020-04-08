@@ -21,11 +21,12 @@ def read_file(path_file: str, shuffle=False) -> (np.ndarray, np.ndarray):
     """Function to read datafile and returns a tuple with the following format: (X, y). X represents all the features
         and y represents all the outputs for each data example
     """
-    data = pd.read_csv(path_file, header=None, skiprows=1).values
+
+    data = pd.read_csv(path_file, header=None, skiprows=0).values
     if shuffle:
         np.random.shuffle(data)
 
-    return data[:, 0:], data[:, 0].reshape(data.shape[0], 1)
+    return data[:, 1:], data[:, 0].reshape(data.shape[0], 1)
 
 
 def represent_data_graphically(data: np.ndarray, file_save: str, rows: int = 10, cols: int = 10):
