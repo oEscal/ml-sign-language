@@ -5,9 +5,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, ShuffleSplit
 from skimage.transform import rescale
-import cv2
 from pathlib import Path
 import os
 
