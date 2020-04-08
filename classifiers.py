@@ -127,7 +127,7 @@ class Classifier(metaclass=ABCMeta):
         with open(file_name, 'w') as file:
             file.write(json.dumps(self.generate_report()))
         logger.info(f"Report saved into file: {file_name}")
-    
+
     def __repr__(self):
         return self.__str__()
 
@@ -178,6 +178,25 @@ class NeuralNetwork(Classifier):
 
 
 class LogisticRegression(Classifier):
+    def __init__(self, classifier, X, y, variation_param):
+        self.X = X
+        self.y = y
+        # self.C = C
+        # self.max_iter = max_iter
+        self.variation_param = variation_param
+        # LogisticRegression_sklearn(C=C, verbose=verbose, max_iter=max_iter, n_jobs=-1),
+        super().__init__(self.__class__.__name__, classifier, self.X, self.y, self.variation_param)
+
+    def save_classifier(self, file_name=None):
+        super().save_classifier(
+            file_name if file_name is not None else f'classifiers/{self.name}_{self.variation_param}/'
+                                                    f'{eval(f"self.classifier.{self.variation_param}")}.classifier')  # _C_{self.C}_max_iter_{self.max_iter}')
+
+    def __str__(self):
+        return super().__str__()  # + f"C->{self.C}\tmax_iter->{self.max_iter}\n"
+
+
+class RbfSvm(Classifier):
     def __init__(self, classifier, X, y, variation_param):
         self.X = X
         self.y = y

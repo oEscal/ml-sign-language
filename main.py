@@ -1,10 +1,12 @@
+from pathlib import Path
+
 from classifiers import *
 from utils import read_file, plot_validation_curve, plot_time_per_parameter, plot_test_accuracy
 from utils import validation_curve
 
 from sklearn import svm
 from sklearn.model_selection import PredefinedSplit
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression as LogisticRegressionSKlearn
 
 
 def f(filename, x, y):
@@ -46,9 +48,9 @@ def set_validation_score_and_curve(classifier, x_train, y_train, x_cv, y_cv, x_t
 
 def main():
     C = (0.001, 0.002, 0.01, 0.02, 0.1, 0.2, 1, 5, 10, 50, 100, 500, 1000)
-    degrees = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+    degree = [2, 3, 4, 5, 6, 7, 8, 9, 10]
     alphas = (0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000)
-    iterations = [200, 500, 1000, 2000]
+    max_iter = [200, 500, 1000, 2000]
 
     x_train, y_train = read_file('dataset/merged_train_set.csv')
     x_cv, y_cv = read_file('dataset/merged_cv_set.csv')
@@ -59,13 +61,28 @@ def main():
     x_test = x_test / 255
 
     set_validation_score_and_curve(
-        svm.SVC(kernel='poly', C=C[0], probability=True, degree=degrees[0], verbose=True),
-        x_train[:100], y_train[:100], x_cv[:100], y_cv[:100], x_test[:100], y_test[:100], "C", C,
+        svm.SVC(kernel='rbf', C=C[0], probability=True, degree=degree[0], verbose=True),
+        x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
+        "RbfSvm(classifier, x_train, y_train, parameter)")
+
+    set_validation_score_and_curve(
+        svm.SVC(kernel='poly', C=C[0], probability=True, degree=degree[0], verbose=True),
+        x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
         "PolynomialSvm(classifier, x_train, y_train, parameter)")
 
     set_validation_score_and_curve(
-        LogisticRegression(C=C[0], verbose=True, max_iter=1000, n_jobs=-1),
-        x_train[:100], y_train[:100], x_cv[:100], y_cv[:100], x_test[:100], y_test[:100], "C", C,
+        LogisticRegressionSKlearn(C=C[0], verbose=True, max_iter=1000, n_jobs=-1),
+        x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
+        "LogisticRegression(classifier, x_train, y_train, parameter)")
+
+    set_validation_score_and_curve(
+        svm.SVC(kernel='poly', C=C[0], probability=True, degree=degree[0], verbose=True),
+        x_train, y_train, x_cv, y_cv, x_test, y_test, "degree", degree,
+        "PolynomialSvm(classifier, x_train, y_train, parameter)")
+
+    set_validation_score_and_curve(
+        LogisticRegressionSKlearn(C=C[0], verbose=True, max_iter=1000, n_jobs=-1),
+        x_train, y_train, x_cv, y_cv, x_test, y_test, "max_iter", max_iter,
         "LogisticRegression(classifier, x_train, y_train, parameter)")
 
     classifiers = get_classifiers("classifiers")
@@ -90,11 +107,18 @@ def main():
         score_times = np.array(score_times)
         tests_accuracy = np.array(tests_accuracy)
 
-        plot_validation_curve(train_scores, valid_scores, f"Validation Curve with SVM Degree:{degrees[0]}",
-                              "C", "Score", C)
+        Path(f"graficos/{classifier_name}").mkdir(parents=True, exist_ok=True)
+        plot_validation_curve(train_scores, valid_scores, f"Validation Curve with {classifier_name}",
+                              classifier_list[0].variation_param, "Score", eval(classifier_list[0].variation_param),
+                              f"{classifier_name}/validation_curve.png")
 
-        plot_time_per_parameter(fit_times, score_times, "Time of fitting and scoring proccesses", "C", "Time (s)", C)
-        plot_test_accuracy(C, tests_accuracy, "Test set accuracy", "C", "Accuracy")
+        plot_time_per_parameter(fit_times, score_times, f"Time of fitting and scoring processes with {classifier_name}",
+                                classifier_list[0].variation_param, "Time (s)",
+                                eval(classifier_list[0].variation_param),
+                                f"{classifier_name}/time_per_parameter.png")
+        plot_test_accuracy(eval(classifier_list[0].variation_param), tests_accuracy,
+                           f"Test set accuracy with {classifier_name}", classifier_list[0].variation_param, "Accuracy",
+                           f"{classifier_name}/test_accuracy.png")
 
 
 if __name__ == '__main__':

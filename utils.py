@@ -14,6 +14,7 @@ from sklearn.metrics import check_scoring
 from sklearn.model_selection import learning_curve, check_cv
 from sklearn.model_selection._validation import _fit_and_score
 from sklearn.utils import indexable, Parallel, delayed
+from pylab import savefig
 
 
 def read_file(path_file: str, shuffle=False) -> (np.ndarray, np.ndarray):
@@ -116,7 +117,7 @@ def validation_curve(estimator, X, y, param_name, param_range, groups=None,
            np.float64(score_time)
 
 
-def plot_validation_curve(train_scores, test_scores, title, xlabel, ylabel, param_range):
+def plot_validation_curve(train_scores, test_scores, title, xlabel, ylabel, param_range, file_name=None):
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
@@ -126,10 +127,13 @@ def plot_validation_curve(train_scores, test_scores, title, xlabel, ylabel, para
     plt.semilogx(param_range, test_scores, label="Cross-validation score", color="orange", marker="o")
 
     plt.legend(loc="best")
-    plt.show()
+    if file_name is not None:
+        savefig(f"graficos/{file_name}", dpi=1000)
+    # plt.show()
+    plt.clf()
 
 
-def plot_time_per_parameter(fit_times, score_times, title, xlabel, ylabel, param_range):
+def plot_time_per_parameter(fit_times, score_times, title, xlabel, ylabel, param_range, file_name=None):
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
@@ -138,15 +142,21 @@ def plot_time_per_parameter(fit_times, score_times, title, xlabel, ylabel, param
     plt.semilogx(param_range, score_times, label="Scoring times", color="orange", marker="o")
 
     plt.legend(loc="best")
-    plt.show()
+    if file_name is not None:
+        savefig(f"graficos/{file_name}", dpi=1000)
+    # plt.show()
+    plt.clf()
 
 
-def plot_test_accuracy(x_data, y_data, title, xlabel, ylabel):
+def plot_test_accuracy(x_data, y_data, title, xlabel, ylabel, file_name=None):
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    
+
     plt.semilogx(x_data, y_data, label="Test set accuracy", color="orange", marker="o")
 
     plt.legend(loc="best")
-    plt.show()
+    if file_name is not None:
+        savefig(f"graficos/{file_name}", dpi=1000)
+    # plt.show()
+    plt.clf()
