@@ -44,21 +44,25 @@ def get_classifiers(path):
 
 def save_best_classifiers(classifiers_list, file_name='best_classifiers'):
     best = sorted(classifiers_list, reverse=True,
-                  key=lambda c: (c.params[str(Label.CV)], c.params[str(Label.TRAIN)], c.params[str(Label.TEST)]))[0]
+                  key=lambda c: (c.params['valid_score'],
+                                 c.params['Test set Accuracy'], c.params['Test set Accuracy']))[0]
 
     save_object(best, f'{file_name}/{best.name}/{best.variation_param}')
 
     return best
 
 
-@unique
-class Label(Enum):
-    TEST = "accuracy train set"
-    CV = "accuracy cv set"
-    TRAIN = "accuracy test set"
+def pick_best_classier_param(folder_path):
+    files = [f for f in listdir(folder_path)]
+    classifiers_list = []
+    for file_name in files:
+        with open(f"{folder_path}/{file_name}", "rb") as output:
+            classifiers_list.append(pickle.load(output))
 
-    def __str__(self):
-        return self.value
+    best_classifier: Classifier = sorted(classifiers_list, reverse=True,
+                                         key=lambda c: (c.params['valid_score'], c.params['Test set Accuracy']))[0]
+
+    return best_classifier, eval(f"best_classifier.classifier.{best_classifier.variation_param}")
 
 
 class Classifier(metaclass=ABCMeta):

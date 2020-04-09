@@ -1,21 +1,54 @@
 from pathlib import Path
 
+from sklearn import svm
+
 from classifiers import *
 from utils import read_file, plot_validation_curve, plot_time_per_parameter, plot_test_accuracy
 from utils import validation_curve
-
-from sklearn import svm
 from sklearn.model_selection import PredefinedSplit
 from sklearn.linear_model import LogisticRegression as LogisticRegressionSKlearn
 
+C = (0.001, 0.002, 0.01, 0.02, 0.1, 0.2, 1, 5, 10, 50, 100, 500, 1000)
+degree = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+alphas = (0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000)
+max_iter = [200, 500, 1000, 2000]
+gamma = (0.001, 0.002, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1)
 
-def f(filename, x, y):
-    pixel_size = x.shape[-1]
-    headlines = ['label']
-    for i in range(1, pixel_size + 1):
-        headlines.append(f'pixel{i}')
 
-    np.savetxt(filename, np.c_[y, x], delimiter=',', header=','.join(headlines))
+def plot_data(classifier_list):
+    train_scores = []
+    valid_scores = []
+    fit_times = []
+    score_times = []
+    tests_accuracy = []
+
+    for classifier in classifier_list:
+        train_scores.append(classifier.params['train_score'])
+        valid_scores.append(classifier.params['valid_score'])
+        fit_times.append(classifier.params['fit_time'])
+        score_times.append(classifier.params['score_time'])
+        tests_accuracy.append(classifier.params['Test set Accuracy'])
+
+    train_scores = np.array(train_scores)
+    valid_scores = np.array(valid_scores)
+    fit_times = np.array(fit_times)
+    score_times = np.array(score_times)
+    tests_accuracy = np.array(tests_accuracy)
+
+    classifier_name = f"{classifier_list[0].name}_{classifier_list[0].variation_param}"
+
+    Path(f"graficos/{classifier_name}").mkdir(parents=True, exist_ok=True)
+    plot_validation_curve(train_scores, valid_scores, f"Validation Curve with {classifier_name}",
+                          classifier_list[0].variation_param, "Score", eval(classifier_list[0].variation_param),
+                          f"{classifier_name}/validation_curve.png")
+
+    plot_time_per_parameter(fit_times, score_times, f"Time of fitting and scoring processes with {classifier_name}",
+                            classifier_list[0].variation_param, "Time (s)",
+                            eval(classifier_list[0].variation_param),
+                            f"{classifier_name}/time_per_parameter.png")
+    plot_test_accuracy(eval(classifier_list[0].variation_param), tests_accuracy,
+                       f"Test set accuracy with {classifier_name}", classifier_list[0].variation_param, "Accuracy",
+                       f"{classifier_name}/test_accuracy.png")
 
 
 def set_validation_score_and_curve(classifier, x_train, y_train, x_cv, y_cv, x_test, y_test, parameter,
@@ -29,6 +62,7 @@ def set_validation_score_and_curve(classifier, x_train, y_train, x_cv, y_cv, x_t
     estimators_svm, train_scores_svm, valid_scores_svm, fit_times, score_times = validation_curve(
         classifier, data_x, data_y.ravel(), parameter, parameter_values, cv=ps, n_jobs=-1)
 
+    classifier_list = []
     for i in range(estimators_svm.shape[0]):
         classifier = estimators_svm[i]
         train_score = train_scores_svm[i]
@@ -45,80 +79,120 @@ def set_validation_score_and_curve(classifier, x_train, y_train, x_cv, y_cv, x_t
         c.confusion_matrix(x_test, y_test, "Test confusion matrix")
         c.save_classifier()
 
+        classifier_list.append(c)
+
+    plot_data(classifier_list)
+
 
 def main():
-    C = (0.001, 0.002, 0.01, 0.02, 0.1, 0.2, 1, 5, 10, 50, 100, 500, 1000)
-    degree = [2, 3, 4, 5, 6, 7, 8, 9, 10]
-    alphas = (0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000)
-    max_iter = [200, 500, 1000, 2000]
-
     x_train, y_train = read_file('dataset/merged_train_set.csv')
     x_cv, y_cv = read_file('dataset/merged_cv_set.csv')
     x_test, y_test = read_file('dataset/merged_test_set.csv')
+
+    """
+    import cv2
+    im = cv2.imread("live_images/opencv_frame_0.png")
+    im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+
+    new_img = []
+    for line in im:
+        new_img.append(np.mean(line, axis=1))
+
+    
+    
+    new_img = np.array(new_img)
+    #new_img = np.append((0,new_img))
+    new_img = new_img.reshape(785,1)
+    """
 
     x_train = x_train / 255
     x_cv = x_cv / 255
     x_test = x_test / 255
 
+    print(x_train.shape)
+
+    # x_train, y_train, x_cv, y_cv, x_test, y_test = x_train[:100], y_train[:100], \
+    #                                                x_cv[:100], y_cv[:100], x_test[:100], y_test[:100]
+
+    """
     set_validation_score_and_curve(
-        svm.SVC(kernel='rbf', C=C[0], probability=True, degree=degree[0], verbose=True),
+        svm.SVC(kernel='rbf', C=1, probability=True, degree=degree[0], verbose=True, gamma=1),
+        x_train, y_train, x_cv, y_cv, x_test, y_test, "gamma", gamma,
+        "RbfSvm(classifier, x_train, y_train, parameter)")
+    """
+
+    _, best_gamma = pick_best_classier_param("classifiers/RbfSvm_gamma")
+
+    set_validation_score_and_curve(
+        svm.SVC(kernel='rbf', C=C[0], probability=True, degree=degree[len(degree) // 2],
+                verbose=True, gamma=best_gamma),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
         "RbfSvm(classifier, x_train, y_train, parameter)")
 
     set_validation_score_and_curve(
-        svm.SVC(kernel='poly', C=C[0], probability=True, degree=degree[0], verbose=True),
+        svm.SVC(kernel='poly', C=C[0], probability=True, degree=degree[len(degree) // 2], verbose=True),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
         "PolynomialSvm(classifier, x_train, y_train, parameter)")
 
-    set_validation_score_and_curve(
-        LogisticRegressionSKlearn(C=C[0], verbose=True, max_iter=1000, n_jobs=-1),
-        x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
-        "LogisticRegression(classifier, x_train, y_train, parameter)")
+    _, best_svm_C = pick_best_classier_param("classifiers/PolynomialSvm_C")
 
     set_validation_score_and_curve(
-        svm.SVC(kernel='poly', C=C[0], probability=True, degree=degree[0], verbose=True),
+        svm.SVC(kernel='poly', C=best_svm_C, probability=True, degree=degree[0], verbose=True),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "degree", degree,
         "PolynomialSvm(classifier, x_train, y_train, parameter)")
 
     set_validation_score_and_curve(
-        LogisticRegressionSKlearn(C=C[0], verbose=True, max_iter=1000, n_jobs=-1),
+        LogisticRegressionSKlearn(C=C[len(C) // 2], verbose=True, max_iter=1000, n_jobs=-1),
+        x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
+        "LogisticRegression(classifier, x_train, y_train, parameter)")
+
+    _, best_lr_C = pick_best_classier_param("classifiers/LogisticRegression_C")
+
+    set_validation_score_and_curve(
+        LogisticRegressionSKlearn(C=best_lr_C, verbose=True, max_iter=1000, n_jobs=-1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "max_iter", max_iter,
         "LogisticRegression(classifier, x_train, y_train, parameter)")
 
+    """
     classifiers = get_classifiers("classifiers")
     for classifier_name, classifier_list in classifiers.items():
+        best = save_best_classifiers(classifier_list)
+        print(best.params)
 
-        train_scores = []
-        valid_scores = []
-        fit_times = []
-        score_times = []
-        tests_accuracy = []
-
-        for classifier in classifier_list:
-            train_scores.append(classifier.params['train_score'])
-            valid_scores.append(classifier.params['valid_score'])
-            fit_times.append(classifier.params['fit_time'])
-            score_times.append(classifier.params['score_time'])
-            tests_accuracy.append(classifier.params['Test set Accuracy'])
-
-        train_scores = np.array(train_scores)
-        valid_scores = np.array(valid_scores)
-        fit_times = np.array(fit_times)
-        score_times = np.array(score_times)
-        tests_accuracy = np.array(tests_accuracy)
-
-        Path(f"graficos/{classifier_name}").mkdir(parents=True, exist_ok=True)
-        plot_validation_curve(train_scores, valid_scores, f"Validation Curve with {classifier_name}",
-                              classifier_list[0].variation_param, "Score", eval(classifier_list[0].variation_param),
-                              f"{classifier_name}/validation_curve.png")
-
-        plot_time_per_parameter(fit_times, score_times, f"Time of fitting and scoring processes with {classifier_name}",
-                                classifier_list[0].variation_param, "Time (s)",
-                                eval(classifier_list[0].variation_param),
-                                f"{classifier_name}/time_per_parameter.png")
-        plot_test_accuracy(eval(classifier_list[0].variation_param), tests_accuracy,
-                           f"Test set accuracy with {classifier_name}", classifier_list[0].variation_param, "Accuracy",
-                           f"{classifier_name}/test_accuracy.png")
+        
+            train_scores = []
+            valid_scores = []
+            fit_times = []
+            score_times = []
+            tests_accuracy = []
+    
+            for classifier in classifier_list:
+                train_scores.append(classifier.params['train_score'])
+                valid_scores.append(classifier.params['valid_score'])
+                fit_times.append(classifier.params['fit_time'])
+                score_times.append(classifier.params['score_time'])
+                tests_accuracy.append(classifier.params['Test set Accuracy'])
+    
+            train_scores = np.array(train_scores)
+            valid_scores = np.array(valid_scores)
+            fit_times = np.array(fit_times)
+            score_times = np.array(score_times)
+            tests_accuracy = np.array(tests_accuracy)
+    
+            Path(f"graficos/{classifier_name}").mkdir(parents=True, exist_ok=True)
+            plot_validation_curve(train_scores, valid_scores, f"Validation Curve with {classifier_name}",
+                                  classifier_list[0].variation_param, "Score", eval(classifier_list[0].variation_param),
+                                  f"{classifier_name}/validation_curve.png")
+    
+            plot_time_per_parameter(fit_times, score_times, f"Time of fitting and scoring processes with {classifier_name}",
+                                    classifier_list[0].variation_param, "Time (s)",
+                                    eval(classifier_list[0].variation_param),
+                                    f"{classifier_name}/time_per_parameter.png")
+            plot_test_accuracy(eval(classifier_list[0].variation_param), tests_accuracy,
+                               f"Test set accuracy with {classifier_name}", classifier_list[0].variation_param, "Accuracy",
+                               f"{classifier_name}/test_accuracy.png")
+    
+        """
 
 
 if __name__ == '__main__':
