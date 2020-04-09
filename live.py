@@ -18,7 +18,10 @@ def open_image(path):
         new_img.append(np.mean(line, axis=1))
 
     new_img = np.array(new_img)
-    return new_img
+    new_img = cv2.resize(new_img, (28, 28), 0, 0)
+    plot_image(new_img)
+    plt.show()
+    return new_img.reshape(1, new_img.shape[0] ** 2) / 255
 
 
 def rescale_image(data, factor):
@@ -40,7 +43,7 @@ def take_photo():
 
     while True:
         ret, frame = cam.read()
-        frame = cv2.resize(frame, (28, 28), 0, 0, cv2.INTER_CUBIC)
+        frame = cv2.resize(frame, (28, 28), 0, 0)
         cv2.imshow("test", frame)
         if not ret:
             break
@@ -63,7 +66,7 @@ def take_photo():
 
 
 def main():
-    # take_photo()
+    take_photo()
     open_image('live_images/opencv_frame_0.png')
 
 
