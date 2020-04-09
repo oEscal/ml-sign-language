@@ -7,7 +7,8 @@ import pickle
 
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression as LogisticRegression_sklearn
-from sklearn.metrics import classification_report, mean_squared_error, precision_score, confusion_matrix, accuracy_score
+from sklearn.metrics import classification_report, mean_squared_error, precision_score, confusion_matrix, \
+    accuracy_score, log_loss
 from abc import ABCMeta
 from sklearn.neural_network import MLPClassifier
 import numpy as np
@@ -61,7 +62,7 @@ class Label(Enum):
 
 
 class Classifier(metaclass=ABCMeta):
-    def __init__(self, name, classifier, X: np.ndarray, y: np.ndarray, variation_param=None):
+    def __init__(self, name, classifier, X: np.ndarray, y: np.ndarray, variation_param=None, nn=False):
         self.name = name
         self.classifier = classifier
         self.params = {}
@@ -75,17 +76,31 @@ class Classifier(metaclass=ABCMeta):
         self.train_scores = None
         self.valid_scores = None
 
-    def __train_model(self, x, y):
+        self.nn = nn
+
+    def __train_model(self):
         logger.info("Training model...")
-        return self.classifier.fit(x, y)
+        return self.classifier.fit(self.X, self.y)
+
+    def __train_nn_model(self):
+        logger.info("Training model...")
+        return self.classifier._fit(self.X, self.y)
 
     def predict(self, x):
         logger.info("Predicting...")
         return self.classifier.predict(x)
 
+    def predict_prob(self, x):
+        logger.info("Predicting...")
+        return self.classifier.predict_proba(x)
+
     def error(self, x, y):
         logger.info(f"Calculating error")
         return mean_squared_error(y, self.predict(x)) / 2
+
+    def log_error(self, x, y):
+        logger.info(f"Calculating error")
+        return log_loss(y, self.predict_prob(x))
 
     def set_new_number_iter(self, iterations):
         self.classifier.max_iter = iterations
@@ -95,7 +110,7 @@ class Classifier(metaclass=ABCMeta):
             self.classifier.warm_start = from_previous
 
         logger.info(f"Starting train: {self.name}")
-        self.history = self.__train_model(self.X, self.y)
+        self.history = self.__train_model() if not self.nn else self.__train_nn_model()
 
     def save_classifier(self, file_name="classifier"):
         save_object(self, file_name)
@@ -166,7 +181,7 @@ class NeuralNetwork(Classifier):
                                        hidden_layer_sizes=self.hidden_layer_sizes, solver=solver,
                                        max_iter=iterations, verbose=verbose, n_iter_no_change=iterations,
                                        batch_size=batch_size),
-                         X, y, self.variation_param)
+                         X, y, variation_param=self.variation_param, nn=True)
 
     def save_classifier(self, file_name=None):
         super().save_classifier(

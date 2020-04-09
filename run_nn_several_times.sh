@@ -1,6 +1,6 @@
 #!/bin/bash
 
-min_alpha=0.000003
+min_alpha=0.000006
 max_alpha=0.000009
 step_alpha=0.000001
 min_hidden_size=75
@@ -11,9 +11,10 @@ step_num_iterations=100
 max_num_iterations=1000
 
 # lambdas=(0.0001 0.001 0.005 0.01 0.05 0.1 0.5 1 5 10 50 100 500 1000)
-alphas=(0.0001 0.001 0.005 0.01 0.05 0.1 0.5 1 5 10 50 100 500 1000) # 0.0001 0.001 0.005 0.01 0.05)
+# alphas=(0.0001 0.001 0.005 0.01 0.05 0.1 0.5 1 5 10 50 100 500 1000) # 0.0001 0.001 0.005 0.01 0.05)
+alphas=(0.0000001 0.000001 0.00001)
 
-id=0
+id=11
 # for num_iterations in $(seq $min_num_iterations $step_num_iterations $max_num_iterations); do
 #    echo Starting number iterations=$num_iterations
 #    python neural_networks.py --alpha 0.00005 --file_id $id --Lambda 0 --num_iterations $num_iterations
@@ -24,16 +25,16 @@ id=0
 #    python neural_networks.py --alpha 0.00005 --file_id $id --Lambda 0 --num_iterations 1000 --hidden_layer_size $hidden_size
 #    id=$((id + 1))
 # done
-# for alpha in $(seq $min_alpha $step_alpha $max_alpha); do
-#    echo Starting alpha=$alpha
-#    python neural_networks.py --alpha ${alpha/,/.} --file_id $id --Lambda 0 --num_iterations 1000
-#    id=$((id + 1))
-# done
-for alpha in ${alphas[@]}; do
+for alpha in $(seq $min_alpha $step_alpha $max_alpha); do
    echo Starting alpha=$alpha
-   python neural_networks.py --alpha $alpha --file_id $id --Lambda 0 --num_iterations 1000
+   python neural_networks.py --alpha ${alpha/,/.} --file_id $id --Lambda 0 --num_iterations 1000
    id=$((id + 1))
 done
+# for alpha in ${alphas[@]}; do
+#    echo Starting alpha=$alpha
+#    python neural_networks.py --alpha $alpha --file_id $id --Lambda 0 --num_iterations 1000
+#    id=$((id + 1))
+# done
 
 # for alpha in $(seq $min_alpha 0.1 $max_alpha); do
 #    echo Starting alpha=$alpha
