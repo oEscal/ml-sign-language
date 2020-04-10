@@ -9,10 +9,12 @@ from sklearn.model_selection import PredefinedSplit
 from sklearn.linear_model import LogisticRegression as LogisticRegressionSKlearn
 
 C = (0.001, 0.002, 0.01, 0.02, 0.1, 0.2, 1, 5, 10, 50, 100, 500, 1000)
-degree = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+# degree = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+degree = [10, 11, 12, 13, 14, 15, 16, 17, 18]
 alphas = (0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000)
 max_iter = [200, 500, 1000, 2000]
-gamma = (0.001, 0.002, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1)
+# gamma = (0.001, 0.002, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1)
+gamma = (0.5, 1, 5, 10, 50, 100, 500, 1000)
 
 
 def plot_data(classifier_list):

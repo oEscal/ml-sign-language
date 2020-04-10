@@ -1,7 +1,7 @@
 #!/bin/bash
 
-min_alpha=0.000006
-max_alpha=0.000009
+min_alpha=0.000016
+max_alpha=0.00002
 step_alpha=0.000001
 min_hidden_size=75
 max_hidden_size=100
@@ -14,7 +14,7 @@ max_num_iterations=1000
 # alphas=(0.0001 0.001 0.005 0.01 0.05 0.1 0.5 1 5 10 50 100 500 1000) # 0.0001 0.001 0.005 0.01 0.05)
 alphas=(0.0000001 0.000001 0.00001)
 
-id=11
+id=15
 # for num_iterations in $(seq $min_num_iterations $step_num_iterations $max_num_iterations); do
 #    echo Starting number iterations=$num_iterations
 #    python neural_networks.py --alpha 0.00005 --file_id $id --Lambda 0 --num_iterations $num_iterations

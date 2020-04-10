@@ -128,7 +128,7 @@ def plot_validation_curve(train_scores, test_scores, title, xlabel, ylabel, para
 
     plt.legend(loc="best")
     if file_name is not None:
-        savefig(f"graficos/{file_name}", dpi=1000)
+        savefig(f"graficos/{file_name}", )#dpi=1000)
     # plt.show()
     plt.clf()
 
@@ -143,7 +143,7 @@ def plot_time_per_parameter(fit_times, score_times, title, xlabel, ylabel, param
 
     plt.legend(loc="best")
     if file_name is not None:
-        savefig(f"graficos/{file_name}", dpi=1000)
+        savefig(f"graficos/{file_name}", )#dpi=1000)
     # plt.show()
     plt.clf()
 
@@ -157,6 +157,6 @@ def plot_test_accuracy(x_data, y_data, title, xlabel, ylabel, file_name=None):
 
     plt.legend(loc="best")
     if file_name is not None:
-        savefig(f"graficos/{file_name}", dpi=1000)
+        savefig(f"graficos/{file_name}", )#dpi=1000)
     # plt.show()
     plt.clf()
