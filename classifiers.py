@@ -68,7 +68,7 @@ def pick_best_classier_param(folder_path):
 class Classifier(metaclass=ABCMeta):
     def __init__(self, name, classifier, X: np.ndarray, y: np.ndarray, variation_param=None, nn=False):
         self.name = name
-        self.classifier = classifier
+        self.classifier:MLPClassifier = classifier
         self.params = {}
         self.variation_param = variation_param
 
@@ -108,6 +108,7 @@ class Classifier(metaclass=ABCMeta):
 
     def set_new_number_iter(self, iterations):
         self.classifier.max_iter = iterations
+        self.classifier.n_iter_no_change += iterations
 
     def train(self, from_previous=False):
         if from_previous:
