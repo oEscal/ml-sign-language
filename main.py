@@ -9,12 +9,10 @@ from sklearn.model_selection import PredefinedSplit
 from sklearn.linear_model import LogisticRegression as LogisticRegressionSKlearn
 
 C = (0.001, 0.002, 0.01, 0.02, 0.1, 0.2, 1, 5, 10, 50, 100, 500, 1000)
-# degree = [2, 3, 4, 5, 6, 7, 8, 9, 10]
-degree = [10, 11, 12, 13, 14, 15, 16, 17, 18]
+degree = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 alphas = (0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000)
 max_iter = [200, 500, 1000, 2000]
-# gamma = (0.001, 0.002, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1)
-gamma = (0.5, 1, 5, 10, 50, 100, 500, 1000)
+gamma = (0.001, 0.002, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000)
 
 
 def plot_data(classifier_list):
@@ -40,17 +38,18 @@ def plot_data(classifier_list):
     classifier_name = f"{classifier_list[0].name}_{classifier_list[0].variation_param}"
 
     Path(f"graficos/{classifier_name}").mkdir(parents=True, exist_ok=True)
-    plot_validation_curve(train_scores, valid_scores, f"Validation Curve with {classifier_name}",
-                          classifier_list[0].variation_param, "Score", eval(classifier_list[0].variation_param),
+    plot_validation_curve(1 - train_scores, 1 - valid_scores,
+                          f"Error for variation of  {classifier_list[0].variation_param}",
+                          classifier_list[0].variation_param, "Error", eval(classifier_list[0].variation_param),
                           f"{classifier_name}/validation_curve.png")
 
     plot_time_per_parameter(fit_times, score_times, f"Time of fitting and scoring processes with {classifier_name}",
                             classifier_list[0].variation_param, "Time (s)",
                             eval(classifier_list[0].variation_param),
                             f"{classifier_name}/time_per_parameter.png")
-    plot_test_accuracy(eval(classifier_list[0].variation_param), tests_accuracy,
-                       f"Test set accuracy with {classifier_name}", classifier_list[0].variation_param, "Accuracy",
-                       f"{classifier_name}/test_accuracy.png")
+    # plot_test_accuracy(eval(classifier_list[0].variation_param), 1-tests_accuracy,
+    #                    f"Test set error with {classifier_name}", classifier_list[0].variation_param, "Error",
+    #                    f"{classifier_name}/test_accuracy.png")
 
 
 def set_validation_score_and_curve(classifier, x_train, y_train, x_cv, y_cv, x_test, y_test, parameter,
@@ -100,6 +99,14 @@ def main():
     # x_train, y_train, x_cv, y_cv, x_test, y_test = x_train[:100], y_train[:100], \
     #                                                x_cv[:100], y_cv[:100], x_test[:100], y_test[:100]
 
+    # classifiers = get_classifiers("merged_classifiers")
+    #
+    # for classifier_name, classifier_list in classifiers.items():
+    #    print(classifier_name)
+    #
+    #    plot_data(classifier_list)
+
+    """
     set_validation_score_and_curve(
         svm.SVC(kernel='rbf', C=1, probability=True, degree=degree[0], verbose=True, gamma=1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "gamma", gamma,
@@ -112,19 +119,28 @@ def main():
                 verbose=True, gamma=best_gamma),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
         "RbfSvm(classifier, x_train, y_train, parameter)")
+    """
+    set_validation_score_and_curve(
+        svm.SVC(kernel='poly', C=1, probability=True, degree=degree[len(degree) // 2], verbose=True, gamma=1),
+        x_train, y_train, x_cv, y_cv, x_test, y_test, "gamma", gamma,
+        "PolynomialSvm(classifier, x_train, y_train, parameter)")
+
+    _, best_svm_gamma = pick_best_classier_param("classifiers/PolynomialSvm_gamma")
 
     set_validation_score_and_curve(
-        svm.SVC(kernel='poly', C=C[0], probability=True, degree=degree[len(degree) // 2], verbose=True),
+        svm.SVC(kernel='poly', C=C[0], probability=True, degree=degree[len(degree) // 2], verbose=True,
+                gamma=best_svm_gamma),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
         "PolynomialSvm(classifier, x_train, y_train, parameter)")
 
     _, best_svm_C = pick_best_classier_param("classifiers/PolynomialSvm_C")
 
     set_validation_score_and_curve(
-        svm.SVC(kernel='poly', C=best_svm_C, probability=True, degree=degree[0], verbose=True),
+        svm.SVC(kernel='poly', C=best_svm_C, probability=True, degree=degree[0], verbose=True, gamma=best_svm_gamma),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "degree", degree,
         "PolynomialSvm(classifier, x_train, y_train, parameter)")
 
+    """
     set_validation_score_and_curve(
         LogisticRegressionSKlearn(C=C[len(C) // 2], verbose=True, max_iter=1000, n_jobs=-1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
@@ -136,6 +152,8 @@ def main():
         LogisticRegressionSKlearn(C=best_lr_C, verbose=True, max_iter=1000, n_jobs=-1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "max_iter", max_iter,
         "LogisticRegression(classifier, x_train, y_train, parameter)")
+
+    """
 
 
 if __name__ == '__main__':

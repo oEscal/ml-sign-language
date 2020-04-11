@@ -32,7 +32,7 @@ def get_classifiers(path):
         if folder_name == 'others':
             continue
         classifiers[folder_name] = []
-        for file_name in [f for f in listdir(folder_path)]:
+        for file_name in sorted([f for f in listdir(folder_path)], key=lambda v: float(v.split('.classifier')[0])):
             file_path = f"{folder_path}/{file_name}"
 
             with open(file_path, 'rb') as output:
