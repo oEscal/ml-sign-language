@@ -12,18 +12,17 @@ max_num_iterations=1000
 min_batch=16
 max_batch=256
 step_mult_batch=2
-activation_functions=("relu", "tanh", "identity")
 
 # lambdas=(0.0001 0.001 0.005 0.01 0.05 0.1 0.5 1 5 10 50 100 500 1000)
 alphas=(0.0001 0.001 0.005 0.01 0.05 0.1 0.5 1 5 10 50 100 500 1000) # 0.0001 0.001 0.005 0.01 0.05)
 # alphas=(0.0000001 0.000001 0.00001)
 
 id=0
-# for num_iterations in $(seq $min_num_iterations $step_num_iterations $max_num_iterations); do
-#    echo Starting number iterations=$num_iterations
-#    python neural_networks.py --alpha 0.00005 --file_id $id --Lambda 0 --num_iterations $num_iterations
-#    id=$((id + 1))
-# done
+for num_iterations in $(seq $min_num_iterations $step_num_iterations $max_num_iterations); do
+   echo Starting number iterations=$num_iterations
+   python neural_networks.py --alpha 1.4e-05 --file_id $id --Lambda 0 --num_iterations $num_iterations
+   id=$((id + 1))
+done
 #for hidden_size in $(seq $min_hidden_size $step_hidden_size $max_hidden_size); do
 #   echo Starting hidden size=$hidden_size
 #   python neural_networks.py --alpha 1.4e-05 --file_id $id --Lambda 0 --num_iterations 1000 --hidden_layer_size $hidden_size
