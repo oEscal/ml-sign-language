@@ -23,8 +23,8 @@ def main(args):
 	alpha = args.alpha  # learning rate
 	Lambda = args.Lambda
 	num_iterations = args.num_iterations
-	activation = "logistic"
-	batch_size = 10
+	activation = args.activation
+	batch_size = args.batch_size
 	
 	from_classifier_id = args.from_classifier_id
 
@@ -71,6 +71,8 @@ if __name__ == "__main__":
 	parser.add_argument("--alpha", type=float, default=1.0)
 	parser.add_argument("--num_iterations", type=int, default=200)
 	parser.add_argument("--hidden_layer_size", type=int, default=50)
+	parser.add_argument("--batch_size", type=int, default=10)
+	parser.add_argument("--activation", type=str, default="logistic")
 
 	parser.add_argument("--classifier_file", type=str, default="classifier")
 	parser.add_argument("--time_file", type=str, default="time.json")
