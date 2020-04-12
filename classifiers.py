@@ -8,7 +8,7 @@ import pickle
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression as LogisticRegression_sklearn
 from sklearn.metrics import classification_report, mean_squared_error, precision_score, confusion_matrix, \
-    accuracy_score, log_loss
+    accuracy_score, log_loss, recall_score, f1_score
 from abc import ABCMeta
 from sklearn.neural_network import MLPClassifier
 import numpy as np
@@ -127,7 +127,13 @@ class Classifier(metaclass=ABCMeta):
         return classification_report(y_true=y, y_pred=self.predict(X))
 
     def precision(self, X, y, average=None):
-        return precision_score(y_true=y, y_pred=self.predict(X), average=average, zero_division=1)
+        return precision_score(y_true=y, y_pred=self.predict(X), average=average, zero_division=0)
+
+    def recall(self, X, y, average=None):
+        return recall_score(y_true=y, y_pred=self.predict(X), average=average, zero_division=0)
+
+    def f1_score(self, X, y, average=None):
+        return f1_score(y_true=y, y_pred=self.predict(X), average=average, zero_division=0)
 
     def accuracy(self, X, y, label='accuracy'):
         self.params[label] = accuracy_score(y_true=y, y_pred=self.predict(X))
