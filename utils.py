@@ -121,10 +121,10 @@ def plot_validation_curve(train_scores, test_scores, title, xlabel, ylabel, para
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    plt.ylim(0.0, 1.1)
 
-    plt.semilogx(param_range, train_scores, label="Training Score", color="blue", marker="o")
-    plt.semilogx(param_range, test_scores, label="Cross-validation score", color="orange", marker="o")
+    plt.grid()
+    plt.semilogx(param_range, train_scores, label="Training Error", color="blue", marker="o")
+    plt.semilogx(param_range, test_scores, label="Cross-validation Error", color="orange", marker='^')
 
     plt.legend(loc="best")
     if file_name is not None:
@@ -138,8 +138,9 @@ def plot_time_per_parameter(fit_times, score_times, title, xlabel, ylabel, param
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
 
+    plt.grid()
     plt.semilogx(param_range, fit_times, label="Fitting times", color="blue", marker="o")
-    plt.semilogx(param_range, score_times, label="Scoring times", color="orange", marker="o")
+    plt.semilogx(param_range, score_times, label="Scoring times", color="orange", marker='^')
 
     plt.legend(loc="best")
     if file_name is not None:
@@ -153,7 +154,8 @@ def plot_test_accuracy(x_data, y_data, title, xlabel, ylabel, file_name=None):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
 
-    plt.semilogx(x_data, y_data, label="Test set accuracy", color="orange", marker="o")
+    plt.grid()
+    plt.semilogx(x_data, y_data, label="Test set Error", color="orange", marker="o")
 
     plt.legend(loc="best")
     if file_name is not None:
