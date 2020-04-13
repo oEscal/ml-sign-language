@@ -30,9 +30,12 @@ def main(args):
 	X_cv, y_cv = read_file("dataset/merged_cv_set.csv")
 	X_test, y_test = read_file("dataset/merged_test_set.csv")
 
-	x_label = last_part_title = study_for
+	x_label = last_part_title = study_for.replace('_', ' ')
 	if study_for == "hidden_layer1":
 		x_label = "number of nodes on the hidden layer"
+		last_part_title = f"the {x_label}"
+	elif study_for == "num_iterations":
+		x_label = "number of iterations"
 		last_part_title = f"the {x_label}"
 
 	accuracy = []
@@ -74,32 +77,32 @@ def main(args):
 			f1_score = classifier.f1_score(X_test, y_test)
 
 			total_accuracy = classifier.accuracy(X_test, y_test)
-			total_recall = classifier.recall(X_test, y_test, average='micro')
-			total_precision = classifier.precision(X_test, y_test, average='micro')
-			total_f1_score = classifier.f1_score(X_test, y_test, average='micro')
+			total_recall = classifier.recall(X_test, y_test, average='macro')
+			total_precision = classifier.precision(X_test, y_test, average='macro')
+			total_f1_score = classifier.f1_score(X_test, y_test, average='macro')
 
-			number_classes = len(confusion_matrix)
-			classes = list(range(number_classes))
+			classes = classifier.history.classes_
+			number_classes = len(classes)
 
 			original_stdout = sys.stdout
-			with open(f"{RESULTS_DIR}{study_for}per_class_metrics{id}.tex", 'w') as file:
+			with open(f"{RESULTS_DIR}{study_for}_per_class_metrics{id}.tex", 'w') as file:
 				sys.stdout = file
 				print(r"\begin{tabular}{l c c c c}")
 				print(r"Class & Accuracy & Recall & Precision & F1 Score\\ \hline")
-				for index in classes:
-					print(f"{index} & {accuracy_per_class[index]:.3} & {recall[index]:.3} & "
+				for index in range(number_classes):
+					print(f"{classes[index]} & {accuracy_per_class[index]:.3} & {recall[index]:.3} & "
 					      f"{precision[index]:.3} & {f1_score[index]:.3}\\\\")
-				print(r"\hline" + f"\nTotal & {total_accuracy:.3} & {total_recall:.3} & "
+				print(r"\hline" + f"\nMacro Average & {total_accuracy:.3} & {total_recall:.3} & "
 					      f"{total_precision:.3} & {total_f1_score:.3}\\\\")
 				print(r"\end{tabular}")
 
-			with open(f"{RESULTS_DIR}{study_for}confusion_matrix{id}.tex", 'w') as file:
+			with open(f"{RESULTS_DIR}{study_for}_confusion_matrix{id}.tex", 'w') as file:
 				sys.stdout = file
 				print(r"\begin{tabular}{l|" + "c "*number_classes + "}")
 				print("Class&", end='')
 				print_latex_list_to_table_line(classes, end_line=True)
-				for index in classes:
-					print_latex_list_to_table_line([f"{index}"] + list(confusion_matrix[index]))
+				for index in range(number_classes):
+					print_latex_list_to_table_line([f"{classes[index]}"] + list(confusion_matrix[index]))
 				print(r"\end{tabular}")
 
 			sys.stdout = original_stdout
