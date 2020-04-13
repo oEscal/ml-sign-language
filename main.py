@@ -119,7 +119,7 @@ def main():
                 verbose=True, gamma=best_gamma),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
         "RbfSvm(classifier, x_train, y_train, parameter)")
-    """
+    
     set_validation_score_and_curve(
         svm.SVC(kernel='poly', C=1, probability=True, degree=degree[len(degree) // 2], verbose=True, gamma=1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "gamma", gamma,
@@ -141,19 +141,12 @@ def main():
         "PolynomialSvm(classifier, x_train, y_train, parameter)")
 
     """
-    set_validation_score_and_curve(
-        LogisticRegressionSKlearn(C=C[len(C) // 2], verbose=True, max_iter=1000, n_jobs=-1),
-        x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
-        "LogisticRegression(classifier, x_train, y_train, parameter)")
 
-    _, best_lr_C = pick_best_classier_param("classifiers/LogisticRegression_C")
+    _, best_gamma = pick_best_classier_param("analise/4/merged_classifiers/RbfSvm_gamma")
+    print("Best gamma ", best_gamma)
 
-    set_validation_score_and_curve(
-        LogisticRegressionSKlearn(C=best_lr_C, verbose=True, max_iter=1000, n_jobs=-1),
-        x_train, y_train, x_cv, y_cv, x_test, y_test, "max_iter", max_iter,
-        "LogisticRegression(classifier, x_train, y_train, parameter)")
-
-    """
+    classifier, best_C = pick_best_classier_param("analise/4/merged_classifiers/RbfSvm_C")
+    print("Best C ", best_C)
 
 
 if __name__ == '__main__':
