@@ -15,3 +15,4 @@
  - `classifiers.py` - wrappers for the used classifiers
  - `utils.py` - some code shared between other python scripts
  - `svm_lr.py` - SVM and LR algoritm's code (run and save the classifier into a binary file)
+ - `run_nn_several_times.sh` - bash script to run multiple times the `neural_networks.py` script, rotating the params of the algorithm
