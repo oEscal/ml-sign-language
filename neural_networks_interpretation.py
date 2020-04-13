@@ -9,11 +9,12 @@ from classifiers import Classifier
 from utils import read_file
 
 import warnings
+
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 def print_latex_list_to_table_line(orig_list, end_line=False):
-	print(*orig_list, sep='&', end='\\\\\n' + (r'\hline' if end_line else ''))
+    print(*orig_list, sep='&', end='\\\\\n' + (r'\hline' if end_line else ''))
 
 
 def main(args):
@@ -156,12 +157,18 @@ def main(args):
 
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
+<<<<<<< HEAD
 	parser.add_argument("--path", type=str, default="results/neural_networks/")
 	parser.add_argument("--study", type=str, default="alpha")
 	parser.add_argument("--retrained", type=bool, default=False)
 	parser.add_argument("--generate_tables_latex", type=bool, default=False)
+=======
+    parser.add_argument("--study", type=str, default="alpha")
+    parser.add_argument("--retrained", type=bool, default=False)
+    parser.add_argument("--generate_tables_latex", type=bool, default=False)
+>>>>>>> 4c5d6eeca161d6422facc93466b8837b116594d1
 
-	args = parser.parse_args()
-	main(args)
+    args = parser.parse_args()
+    main(args)

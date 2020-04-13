@@ -29,7 +29,7 @@ def get_classifiers(path):
 
     for folder_name in folders:
         folder_path = f"{path}/{folder_name}"
-        if folder_name == 'others':
+        if "LogisticRegression_C" not in folder_name:
             continue
         classifiers[folder_name] = []
         for file_name in sorted([f for f in listdir(folder_path)], key=lambda v: float(v.split('.classifier')[0])):
@@ -60,7 +60,8 @@ def pick_best_classier_param(folder_path):
             classifiers_list.append(pickle.load(output))
 
     best_classifier: Classifier = sorted(classifiers_list, reverse=True,
-                                         key=lambda c: (c.params['valid_score'], c.params['Test set Accuracy']))[0]
+                                         key=lambda c: (c.params['valid_score'],
+                                                        c.params['Test set Accuracy'], c.params['fit_time']))[0]
 
     return best_classifier, eval(f"best_classifier.classifier.{best_classifier.variation_param}")
 
@@ -68,7 +69,7 @@ def pick_best_classier_param(folder_path):
 class Classifier(metaclass=ABCMeta):
     def __init__(self, name, classifier, X: np.ndarray, y: np.ndarray, variation_param=None, nn=False):
         self.name = name
-        self.classifier:MLPClassifier = classifier
+        self.classifier: MLPClassifier = classifier
         self.params = {}
         self.variation_param = variation_param
 

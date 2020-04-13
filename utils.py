@@ -153,6 +153,8 @@ def plot_test_accuracy(x_data, y_data, title, xlabel, ylabel, file_name=None):
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
+    plt.xticks(x_data)
+    plt.yticks(y_data)
 
     plt.grid()
     plt.semilogx(x_data, y_data, label="Test set Error", color="orange", marker="o")
