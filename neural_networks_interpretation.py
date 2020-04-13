@@ -65,6 +65,7 @@ def main(args):
 		print(f"{title:^70}")
 		print(f" -> Accuracy: {current_accuracy}\n")
 		print(f" -> Error: {current_error}")
+		print(f" -> Number of iterations: {len(classifier.history.loss_curve_)}")
 
 		plt.plot(classifier.history.loss_curve_)
 

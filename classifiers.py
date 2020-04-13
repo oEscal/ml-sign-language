@@ -182,7 +182,7 @@ class PolynomialSvm(Classifier):
 
 class NeuralNetwork(Classifier):
     def __init__(self, X, y, alpha, Lambda, hidden_layer_sizes, iterations, activation, batch_size, solver="sgd",
-                 variation_param=None, verbose=False):
+                 variation_param=None, verbose=False, n_iter_no_change=1000, tolerance=1e-4):
         self.alpha = alpha
         self.hidden_layer_sizes = hidden_layer_sizes
         self.max_iter = iterations
@@ -190,8 +190,8 @@ class NeuralNetwork(Classifier):
         super().__init__(self.__class__.__name__,
                          MLPClassifier(alpha=Lambda, learning_rate_init=alpha, activation=activation,
                                        hidden_layer_sizes=self.hidden_layer_sizes, solver=solver,
-                                       max_iter=iterations, verbose=verbose, n_iter_no_change=iterations,
-                                       batch_size=batch_size),
+                                       max_iter=iterations, verbose=verbose, n_iter_no_change=n_iter_no_change,
+                                       batch_size=batch_size, tol=tolerance),
                          X, y, variation_param=self.variation_param, nn=True)
 
     def save_classifier(self, file_name=None):

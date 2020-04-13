@@ -23,6 +23,8 @@ def main(args):
 	alpha = args.alpha  # learning rate
 	Lambda = args.Lambda
 	num_iterations = args.num_iterations
+	n_iter_no_change = args.n_iter_no_change
+	tolerance = args.tolerance
 	activation = args.activation
 	batch_size = args.batch_size
 	
@@ -43,7 +45,8 @@ def main(args):
 		classifier.train(from_previous=True)
 	else:
 		classifier = NeuralNetwork(X=X, y=y.ravel(), alpha=alpha, Lambda=Lambda, hidden_layer_sizes=(hidden_layer_size,),
-		                           activation=activation, iterations=num_iterations, batch_size=batch_size)
+		                           activation=activation, iterations=num_iterations, batch_size=batch_size,
+		                           n_iter_no_change=n_iter_no_change, tolerance=tolerance)
 		classifier.train()
 
 	classifier.save_classifier(f"{PATH_SAVE}{args.classifier_file}_id{file_id}")
@@ -54,6 +57,8 @@ def main(args):
 		'alpha': alpha,
 		'lambda': Lambda,
 		'num_iterations': num_iterations,
+		'n_iter_no_change': n_iter_no_change,
+		'tolerance': tolerance,
 		'file_id': file_id,
 		'batch_size': batch_size,
 		'activation': activation,
@@ -70,6 +75,8 @@ if __name__ == "__main__":
 	parser.add_argument("--Lambda", type=float, default=0)
 	parser.add_argument("--alpha", type=float, default=1.0)
 	parser.add_argument("--num_iterations", type=int, default=200)
+	parser.add_argument("--n_iter_no_change", type=int, default=1000)
+	parser.add_argument("--tolerance", type=int, default=1e-4)
 	parser.add_argument("--hidden_layer_size", type=int, default=50)
 	parser.add_argument("--batch_size", type=int, default=10)
 	parser.add_argument("--activation", type=str, default="logistic")
