@@ -11,18 +11,17 @@ from utils import read_file
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-RESULTS_DIR = "results/neural_networks/"
-
 
 def print_latex_list_to_table_line(orig_list, end_line=False):
 	print(*orig_list, sep='&', end='\\\\\n' + (r'\hline' if end_line else ''))
 
 
 def main(args):
+	results_dir = args.path
 	study_for = args.study
 	time_file_name = f"time.json"
 
-	with open(f"{RESULTS_DIR}{time_file_name}") as file:
+	with open(f"{results_dir}{time_file_name}") as file:
 		all_data = file.readlines()
 		all_data = sorted([json.loads(line.replace('\n', '')) for line in all_data], key=lambda x: x[study_for])
 
@@ -45,7 +44,7 @@ def main(args):
 	for data in all_data:
 		id = data['file_id']
 
-		with open(f"{RESULTS_DIR}classifier_id{id}", 'rb') as file:
+		with open(f"{results_dir}classifier_id{id}", 'rb') as file:
 			classifier: Classifier = pickle.load(file)
 
 		current_accuracy = classifier.accuracy(X_cv, y_cv)
@@ -86,7 +85,7 @@ def main(args):
 			number_classes = len(classes)
 
 			original_stdout = sys.stdout
-			with open(f"{RESULTS_DIR}{study_for}_per_class_metrics{id}.tex", 'w') as file:
+			with open(f"{results_dir}{study_for}_per_class_metrics{id}.tex", 'w') as file:
 				sys.stdout = file
 				print(r"\begin{tabular}{l c c c c}")
 				print(r"Class & Accuracy & Recall & Precision & F1 Score\\ \hline")
@@ -97,7 +96,7 @@ def main(args):
 					      f"{total_precision:.3} & {total_f1_score:.3}\\\\")
 				print(r"\end{tabular}")
 
-			with open(f"{RESULTS_DIR}{study_for}_confusion_matrix{id}.tex", 'w') as file:
+			with open(f"{results_dir}{study_for}_confusion_matrix{id}.tex", 'w') as file:
 				sys.stdout = file
 				print(r"\begin{tabular}{l|" + "c "*number_classes + "}")
 				print("Class&", end='')
@@ -119,7 +118,7 @@ def main(args):
 	plt.title(f"Cost function for {last_part_title}")
 	plt.xlabel("Number of iterations")
 	plt.ylabel(r"$J(\theta)$")
-	cost_plot.savefig(f"{RESULTS_DIR}{study_for}_cost.png")
+	cost_plot.savefig(f"{results_dir}{study_for}_cost.png")
 
 	time_plot = plt.figure(2)
 	plt.plot(study_for_data, times, marker='o', color="blue")
@@ -127,7 +126,7 @@ def main(args):
 	plt.title(f"Execution time for {last_part_title}")
 	plt.xlabel(x_label)
 	plt.ylabel("Execution time (s)")
-	time_plot.savefig(f"{RESULTS_DIR}{study_for}_time.png")
+	time_plot.savefig(f"{results_dir}{study_for}_time.png")
 
 	error_plot = plt.figure(3)
 	plt.plot(study_for_data, error_train, color="blue", marker='o')
@@ -145,7 +144,7 @@ def main(args):
 	plt.title(f"Error for a variation of {last_part_title}")
 	plt.xlabel(x_label)
 	plt.ylabel("Error")
-	error_plot.savefig(f"{RESULTS_DIR}{study_for}_error.png")
+	error_plot.savefig(f"{results_dir}{study_for}_error.png")
 
 	accuracy_plot = plt.figure(4)
 	plt.plot(study_for_data, accuracy, marker='o', color="blue")
@@ -153,12 +152,13 @@ def main(args):
 	plt.title("Accuracy")
 	plt.xlabel(x_label)
 	plt.ylabel("Accuracy")
-	accuracy_plot.savefig(f"{RESULTS_DIR}{study_for}_accuracy.png")
+	accuracy_plot.savefig(f"{results_dir}{study_for}_accuracy.png")
 
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 
+	parser.add_argument("--path", type=str, default="results/neural_networks/")
 	parser.add_argument("--study", type=str, default="alpha")
 	parser.add_argument("--retrained", type=bool, default=False)
 	parser.add_argument("--generate_tables_latex", type=bool, default=False)

@@ -18,8 +18,9 @@ default_alpha=1.4e-05
 
 id=0
 
+
 if [[ $1 == big_steps ]]; then
-   for alpha in $(seq $min_alpha 0.1 $max_alpha); do
+   for alpha in $(seq $min_alpha $step_alpha $max_alpha); do
       echo Starting alpha=$alpha
       python neural_networks.py --alpha ${alpha/,/.} --file_id $id --Lambda 0 --num_iterations 1000
       id=$((id + 1))
