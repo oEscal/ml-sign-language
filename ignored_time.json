@@ -1,1 +1,0 @@
-{"hidden_layer1": 50, "alpha": 1.4e-05, "lambda": 0.0, "num_iterations": 700, "file_id": 6, "batch_size": 10, "activation": "logistic", "from_classifier_id": null, "time": 1270.0935332775116}

@@ -1,8 +1,15 @@
-# ml-sign-language
+# ML Sign Language
 
-## Dataset  
- - Since the original dataset (`sign_mnist_test.csv + sign_mnist_train.csv`) have 34627 entries, we decided to let the `sign_mnist_test.csv` dataset with the original data and split the `sign_mnist_train.csv` into 2 datasets, one with the training data (`sign_mnist_train.csv`) with 20455 entries and another with the cross validation data (`sign_mnist_cv.csv`), with 7000 entries, giving a division of more or less:
- 
- | Trainig set | Cross validation set | Test set |
- |-------------|----------------------|----------|
- |     60%     |          20%         |    20%   |
+# Set the environment
+ - Open a linux terminal and type:
+ ```bash
+ $ virtualenv venv
+ $ source venv/bin/activate
+ $ pip install -r requirements.txt
+ ```
+
+# Files
+ - `neural_networks.py` - neural networks algoritm's code (run and save the classifier into a binary file)
+ - `neural_networks_interpretation.py` - neural networks graphs and latex tables
+ - `classifiers.py` - wrappers for the used classifiers
+ - `utils.py` - some code shared between other python scripts
