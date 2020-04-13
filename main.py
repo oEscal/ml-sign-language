@@ -48,17 +48,11 @@ def plot_data(classifier_list):
                             classifier_list[0].variation_param, "Time (s)",
                             eval(classifier_list[0].variation_param),
                             f"{classifier_name}/time_per_parameter.png")
-<<<<<<< HEAD
     """
     plot_test_accuracy(eval(classifier_list[0].variation_param), 1 - tests_accuracy,
                        f"Test set error with {classifier_name}", classifier_list[0].variation_param, "Error",
                        f"{classifier_name}/test_accuracy.png")
     """
-=======
-    # plot_test_accuracy(eval(classifier_list[0].variation_param), 1-tests_accuracy,
-    #                    f"Test set error with {classifier_name}", classifier_list[0].variation_param, "Error",
-    #                    f"{classifier_name}/test_accuracy.png")
->>>>>>> 7691c12c211b9de31372641c92a238e03878f780
 
 
 def set_validation_score_and_curve(classifier, x_train, y_train, x_cv, y_cv, x_test, y_test, parameter,
@@ -132,11 +126,7 @@ def main():
                 verbose=True, gamma=best_gamma),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
         "RbfSvm(classifier, x_train, y_train, parameter)")
-<<<<<<< HEAD
     
-=======
-    """
->>>>>>> 7691c12c211b9de31372641c92a238e03878f780
     set_validation_score_and_curve(
         svm.SVC(kernel='poly', C=1, probability=True, degree=degree[len(degree) // 2], verbose=True, gamma=1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "gamma", gamma,
@@ -157,11 +147,7 @@ def main():
         x_train, y_train, x_cv, y_cv, x_test, y_test, "degree", degree,
         "PolynomialSvm(classifier, x_train, y_train, parameter)")
 
-<<<<<<< HEAD
     
-=======
-    """
->>>>>>> 7691c12c211b9de31372641c92a238e03878f780
     set_validation_score_and_curve(
         LogisticRegressionSKlearn(C=C[len(C) // 2], verbose=True, max_iter=1000, n_jobs=-1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
@@ -174,7 +160,6 @@ def main():
         x_train, y_train, x_cv, y_cv, x_test, y_test, "max_iter", max_iter,
         "LogisticRegression(classifier, x_train, y_train, parameter)")
 
-<<<<<<< HEAD
 """
     _, best_C = pick_best_classier_param("4/merged_classifiers/LogisticRegression_C")
     print("Best C ", best_C)
@@ -216,9 +201,6 @@ def main():
         for i in range(len(classes)):
             print_latex_list_to_table_line([f"{classes[i]}"] + list(confusion_matrix[i]))
         print(r"\end{tabular}")
-=======
-    """
->>>>>>> 7691c12c211b9de31372641c92a238e03878f780
 
 
 if __name__ == '__main__':

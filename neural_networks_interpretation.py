@@ -81,10 +81,16 @@ def main(args):
 			total_precision = classifier.precision(X_test, y_test, average='macro')
 			total_f1_score = classifier.f1_score(X_test, y_test, average='macro')
 
+<<<<<<< HEAD
 
 			classes = classifier.history.classes_
 			number_classes = len(classes)
 			
+=======
+			classes = classifier.history.classes_
+			number_classes = len(classes)
+
+>>>>>>> 7691c12c211b9de31372641c92a238e03878f780
 			original_stdout = sys.stdout
 			with open(f"{RESULTS_DIR}{study_for}_per_class_metrics{id}.tex", 'w') as file:
 				sys.stdout = file
