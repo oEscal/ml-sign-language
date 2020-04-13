@@ -8,7 +8,7 @@ import pickle
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression as LogisticRegression_sklearn
 from sklearn.metrics import classification_report, mean_squared_error, precision_score, confusion_matrix, \
-    accuracy_score, log_loss
+    accuracy_score, log_loss, recall_score, f1_score
 from abc import ABCMeta
 from sklearn.neural_network import MLPClassifier
 import numpy as np
@@ -29,10 +29,10 @@ def get_classifiers(path):
 
     for folder_name in folders:
         folder_path = f"{path}/{folder_name}"
-        if folder_name == 'others':
+        if "LogisticRegression_C" not in folder_name:
             continue
         classifiers[folder_name] = []
-        for file_name in [f for f in listdir(folder_path)]:
+        for file_name in sorted([f for f in listdir(folder_path)], key=lambda v: float(v.split('.classifier')[0])):
             file_path = f"{folder_path}/{file_name}"
 
             with open(file_path, 'rb') as output:
@@ -60,7 +60,8 @@ def pick_best_classier_param(folder_path):
             classifiers_list.append(pickle.load(output))
 
     best_classifier: Classifier = sorted(classifiers_list, reverse=True,
-                                         key=lambda c: (c.params['valid_score'], c.params['Test set Accuracy']))[0]
+                                         key=lambda c: (c.params['valid_score'],
+                                                        c.params['Test set Accuracy'], c.params['fit_time']))[0]
 
     return best_classifier, eval(f"best_classifier.classifier.{best_classifier.variation_param}")
 
@@ -68,7 +69,7 @@ def pick_best_classier_param(folder_path):
 class Classifier(metaclass=ABCMeta):
     def __init__(self, name, classifier, X: np.ndarray, y: np.ndarray, variation_param=None, nn=False):
         self.name = name
-        self.classifier:MLPClassifier = classifier
+        self.classifier: MLPClassifier = classifier
         self.params = {}
         self.variation_param = variation_param
 
@@ -127,7 +128,13 @@ class Classifier(metaclass=ABCMeta):
         return classification_report(y_true=y, y_pred=self.predict(X))
 
     def precision(self, X, y, average=None):
-        return precision_score(y_true=y, y_pred=self.predict(X), average=average, zero_division=1)
+        return precision_score(y_true=y, y_pred=self.predict(X), average=average, zero_division=0)
+
+    def recall(self, X, y, average=None):
+        return recall_score(y_true=y, y_pred=self.predict(X), average=average, zero_division=0)
+
+    def f1_score(self, X, y, average=None):
+        return f1_score(y_true=y, y_pred=self.predict(X), average=average, zero_division=0)
 
     def accuracy(self, X, y, label='accuracy'):
         self.params[label] = accuracy_score(y_true=y, y_pred=self.predict(X))
