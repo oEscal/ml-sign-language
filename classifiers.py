@@ -29,7 +29,7 @@ def get_classifiers(path):
 
     for folder_name in folders:
         folder_path = f"{path}/{folder_name}"
-        if "LogisticRegression_C" not in folder_name:
+        if "LogisticRegression_max_iter" not in folder_name:
             continue
         classifiers[folder_name] = []
         for file_name in sorted([f for f in listdir(folder_path)], key=lambda v: float(v.split('.classifier')[0])):

@@ -162,11 +162,17 @@ def main():
         "LogisticRegression(classifier, x_train, y_train, parameter)")
 
 """
-    _, best_C = pick_best_classier_param("4/merged_classifiers/LogisticRegression_C")
+    classifiers = get_classifiers("analise/4/merged_classifiers")
+
+    for classier_name, classifier_list in classifiers.items():
+        plot_data(classifier_list)
+
+    return
+    _, best_C = pick_best_classier_param("analise/4/merged_classifiers/LogisticRegression_C")
     print("Best C ", best_C)
 
-    classifier, best_degree = pick_best_classier_param("4/merged_classifiers/LogisticRegression_max_iter")
-    print("Best max_iter ", best_degree)
+    classifier, best_iter = pick_best_classier_param("analise/4/merged_classifiers/LogisticRegression_max_iter")
+    print("Best best_iter ", best_iter)
 
     confusion_matrix = classifier.confusion_matrix(x_test, y_test)
 
@@ -179,22 +185,22 @@ def main():
     f1_score = classifier.f1_score(x_test, y_test)
 
     total_accuracy = classifier.accuracy(x_test, y_test)
-    total_recall = classifier.recall(x_test, y_test, average='micro')
-    total_precision = classifier.precision(x_test, y_test, average='micro')
-    total_f1_score = classifier.f1_score(x_test, y_test, average='micro')
+    total_recall = classifier.recall(x_test, y_test, average='macro')
+    total_precision = classifier.precision(x_test, y_test, average='macro')
+    total_f1_score = classifier.f1_score(x_test, y_test, average='macro')
 
-    with open(f"relatorio/poly_per_class_metrics.tex", 'w') as file:
+    with open(f"relatorio/lr_per_class_metrics.tex", 'w') as file:
         sys.stdout = file
         print(r"\begin{tabular}{l c c c c}")
         print(r"Class & Accuracy & Recall & Precision & F1 Score\\ \hline")
-        for i in range(len(classes)):
-            print(f"{classes[i]} & {accuracy_per_class[i]:.3} & {recall[i]:.3} & "
-                  f"{precision[i]:.3} & {f1_score[i]:.3}\\\\")
-        print(r"\hline" + f"\nTotal & {total_accuracy:.3} & {total_recall:.3} & "
+        for index in range(number_classes):
+            print(f"{classes[index]} & {accuracy_per_class[index]:.3} & {recall[index]:.3} & "
+                  f"{precision[index]:.3} & {f1_score[index]:.3}\\\\")
+        print(r"\hline" + f"\nMacro Average & {total_accuracy:.3} & {total_recall:.3} & "
                           f"{total_precision:.3} & {total_f1_score:.3}\\\\")
         print(r"\end{tabular}")
 
-    with open(f"relatorio/confusion_matrix_poly.tex", 'w') as file:
+    with open(f"relatorio/confusion_matrix_lr.tex", 'w') as file:
         sys.stdout = file
         print(r"\begin{tabular}{l|" + "c " * number_classes + "}")
         print("Class&", end='')
