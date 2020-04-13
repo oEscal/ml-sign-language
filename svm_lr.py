@@ -88,10 +88,6 @@ def set_validation_score_and_curve(classifier, x_train, y_train, x_cv, y_cv, x_t
     plot_data(classifier_list)
 
 
-def print_latex_list_to_table_line(orig_list, end_line=False):
-    print(*orig_list, sep='&', end='\\\\\n' + (r'\hline' if end_line else ''))
-
-
 def main():
     x_train, y_train = read_file('dataset/merged_train_set.csv')
     x_cv, y_cv = read_file('dataset/merged_cv_set.csv')
@@ -103,17 +99,6 @@ def main():
 
     print(x_train.shape)
 
-    # x_train, y_train, x_cv, y_cv, x_test, y_test = x_train[:100], y_train[:100], \
-    #                                                x_cv[:100], y_cv[:100], x_test[:100], y_test[:100]
-
-    # classifiers = get_classifiers("merged_classifiers")
-    #
-    # for classifier_name, classifier_list in classifiers.items():
-    #    print(classifier_name)
-    #
-    #    plot_data(classifier_list)
-
-    """
     set_validation_score_and_curve(
         svm.SVC(kernel='rbf', C=1, probability=True, degree=degree[0], verbose=True, gamma=1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "gamma", gamma,
@@ -126,7 +111,7 @@ def main():
                 verbose=True, gamma=best_gamma),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
         "RbfSvm(classifier, x_train, y_train, parameter)")
-    
+
     set_validation_score_and_curve(
         svm.SVC(kernel='poly', C=1, probability=True, degree=degree[len(degree) // 2], verbose=True, gamma=1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "gamma", gamma,
@@ -147,67 +132,17 @@ def main():
         x_train, y_train, x_cv, y_cv, x_test, y_test, "degree", degree,
         "PolynomialSvm(classifier, x_train, y_train, parameter)")
 
-    
     set_validation_score_and_curve(
         LogisticRegressionSKlearn(C=C[len(C) // 2], verbose=True, max_iter=1000, n_jobs=-1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "C", C,
         "LogisticRegression(classifier, x_train, y_train, parameter)")
 
-    _, best_gamma = pick_best_classier_param("analise/4/merged_classifiers/RbfSvm_gamma")
-    print("Best gamma ", best_gamma)
+    _, best_lr_C = pick_best_classier_param("classifiers/RbfSvm_gamma")
 
     set_validation_score_and_curve(
         LogisticRegressionSKlearn(C=best_lr_C, verbose=True, max_iter=1000, n_jobs=-1),
         x_train, y_train, x_cv, y_cv, x_test, y_test, "max_iter", max_iter,
         "LogisticRegression(classifier, x_train, y_train, parameter)")
-
-"""
-    classifiers = get_classifiers("analise/4/merged_classifiers")
-
-    for classier_name, classifier_list in classifiers.items():
-        plot_data(classifier_list)
-
-    return
-    _, best_C = pick_best_classier_param("analise/4/merged_classifiers/LogisticRegression_C")
-    print("Best C ", best_C)
-
-    classifier, best_iter = pick_best_classier_param("analise/4/merged_classifiers/LogisticRegression_max_iter")
-    print("Best best_iter ", best_iter)
-
-    confusion_matrix = classifier.confusion_matrix(x_test, y_test)
-
-    number_classes = len(classifier.classifier.classes_)
-    classes = classifier.classifier.classes_
-
-    accuracy_per_class = confusion_matrix.diagonal() / confusion_matrix.sum(axis=1)
-    precision = classifier.precision(x_test, y_test)
-    recall = classifier.recall(x_test, y_test)
-    f1_score = classifier.f1_score(x_test, y_test)
-
-    total_accuracy = classifier.accuracy(x_test, y_test)
-    total_recall = classifier.recall(x_test, y_test, average='macro')
-    total_precision = classifier.precision(x_test, y_test, average='macro')
-    total_f1_score = classifier.f1_score(x_test, y_test, average='macro')
-
-    with open(f"relatorio/lr_per_class_metrics.tex", 'w') as file:
-        sys.stdout = file
-        print(r"\begin{tabular}{l c c c c}")
-        print(r"Class & Accuracy & Recall & Precision & F1 Score\\ \hline")
-        for index in range(number_classes):
-            print(f"{classes[index]} & {accuracy_per_class[index]:.3} & {recall[index]:.3} & "
-                  f"{precision[index]:.3} & {f1_score[index]:.3}\\\\")
-        print(r"\hline" + f"\nMacro Average & {total_accuracy:.3} & {total_recall:.3} & "
-                          f"{total_precision:.3} & {total_f1_score:.3}\\\\")
-        print(r"\end{tabular}")
-
-    with open(f"relatorio/confusion_matrix_lr.tex", 'w') as file:
-        sys.stdout = file
-        print(r"\begin{tabular}{l|" + "c " * number_classes + "}")
-        print("Class&", end='')
-        print_latex_list_to_table_line(classes, end_line=True)
-        for i in range(len(classes)):
-            print_latex_list_to_table_line([f"{classes[i]}"] + list(confusion_matrix[i]))
-        print(r"\end{tabular}")
 
 
 if __name__ == '__main__':

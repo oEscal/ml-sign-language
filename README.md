@@ -13,3 +13,4 @@
  - `neural_networks_interpretation.py` - neural networks graphs and latex tables
  - `classifiers.py` - wrappers for the used classifiers
  - `utils.py` - some code shared between other python scripts
+ - `svm_lr.py` - SVM and LR algoritm's code (run and save the classifier into a binary file)
