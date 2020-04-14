@@ -159,16 +159,10 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-<<<<<<< HEAD
 	parser.add_argument("--path", type=str, default="results/neural_networks/")
 	parser.add_argument("--study", type=str, default="alpha")
 	parser.add_argument("--retrained", type=bool, default=False)
 	parser.add_argument("--generate_tables_latex", type=bool, default=False)
-=======
-    parser.add_argument("--study", type=str, default="alpha")
-    parser.add_argument("--retrained", type=bool, default=False)
-    parser.add_argument("--generate_tables_latex", type=bool, default=False)
->>>>>>> 4c5d6eeca161d6422facc93466b8837b116594d1
 
     args = parser.parse_args()
     main(args)
