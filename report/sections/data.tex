@@ -1,0 +1,34 @@
+\section{Dados}
+As imagens usadas para fazer este estudo foram criadas, originalmente, por várias pessoas a reproduzirem múltiplas vezes os gestos referentes às letras pretendidas, com diferentes fundos, para uma maior diversidade de dados \footnote{https://github.com/mon95/Sign-Language-and-Static-gesture-recognition-using-sklearn}. É possível observar um exemplo destas fotos, já com algum pós processamento, na figura \ref{fig:data_example}.
+
+\begin{figure}[!b]
+	\centering
+	\includegraphics[width=3in]{amer_sign2}
+	\caption{Alguns exemplos de imagens, a cores, do \textit{dataset}. Elas representam as letras do alfabeto americano em linguagem 	gestual que não necessitam de movimentação.}
+	\label{fig:data_example}
+\end{figure}
+
+\subsection{Transformação do Dataset original}
+Pelo facto do \textit{dataset} original conter um conjunto relativamente pequeno de dados (1704 imagens), este foi transformado num de maiores dimensões através de várias transformações feitas às imagens originais, sendo que o \textit{dataset} obtido e com que trabalhamos possui um total de 34627 dados, distribuídos por 24 \textit{labels}, numerados de 0 a 25 mapeados para as letras de A a Z alfabeticamente (foram excluídas as letras "J", correspondente ao \textit{label} 9, e "Z", correspondente ao \textit{label} 25, por necessitarem de movimentação gestual). \par
+É de destacar também que os dados se encontram estruturados de forma similar aos do \textit{MNIST}\footnote{http://yann.lecun.com/exdb/mnist/}: os objectos submetidos a classificação (neste caso, os gestos) estão centrados em imagens de 28x28 pixeis, em escala cinzenta, armazenados num ficheiro \textit{csv}, onde a primeira coluna de cada linha corresponde ao \textit{label} daquilo que está a ser classificado e as restantes colunas correspondem aos valores dos pixeis da imagem original, numa escala de 0 (preto) a 255 (branco), resultando num total de 785 colunas. \par
+Este tratamento realizado sob os dados originais não foi feito por nós, estando já disponíveis no \textit{Kaggle}\footnote{https://www.kaggle.com/datamunge/sign-language-mnist}.
+
+\subsection{Divisão dos dados para o estudo}
+
+Apesar dos dados obtidos no \textit{Kaggle} se encontrarem divididos em dois \textit{datasets}, um para treino e outro para testes, seguindo o método \textit{Hold-out}, decidimos, tal como sugeridos nas aulas da disciplina, dividir os dados em três partes, de forma a obter um terceiro \textit{dataset}, para \textit{cross validation}, de forma a fazer a selecção do melhor modelo e usar os dados de teste apenas para teste do melhor modelo que encontrá-mos para cada algoritmo.
+Desta forma, a divisão que decidimos efectuar sobre os dados foi a recomendada na disciplina, isto é, aproximadamente 60\% (20776 dados) de dados de treino e 20\% de \textit{cross validation} (6925 dados) e de teste (6925 dados), distribuídos de forma aleatória por cada um a partir dos dados iniciais. Como é possível constatar pela figura \ref{fig:data_distribution}, os dados ficaram distribuídos de forma praticamente uniforme por cada um dos \textit{labels} existentes em qualquer um dos \textit{datasets}.
+\begin{figure*}[!t]
+	\centering
+	\includegraphics[width=\textwidth]{sets_distribution}
+	\caption{Distribuição de dados por \textit{label} por \textit{dataset}.}
+	\label{fig:data_distribution}
+\end{figure*}
+
+\subsection{Forma como os dados foram explorados no estudo}
+Com os dados devidamente separados em três \textit{datasets}, a forma como usamos cada um deles foi a seguinte:
+\begin{itemize}
+\item Os dados de treino foram usados para treinar os vários modelos que exploramos, mais concretamente.
+\item Os dados de \textit{cross validation} foram usados para determinar o melhor modelo para cada variação de hiperparâmetros testada.
+\item Os dados de teste foram usados para perceber o quão boa a prestação modelo de cada algoritmo usado foi após fazer o \textit{fine tuning} deste.
+\end{itemize}
+Para além disso, foi também usado o método de \textit{Feature Scaling}, de forma a reduzir a escala das \textit{features} (neste caso, os pixeis das imagens), dividindo cada uma delas por 255, já que é o valor máximo que um pixel pode possuir. Foi realizada esta normalização não com o intuito de trabalhar com todas as \textit{features} na mesma escala, até porque já se encontravam, mas sim de forma a evitar \textit{overflow} durante os cálculos realizados por cada algoritmo.

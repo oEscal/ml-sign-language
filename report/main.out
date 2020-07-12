@@ -1,0 +1,14 @@
+\BOOKMARK [1][-]{section.1}{Introdu\347\343o}{}% 1
+\BOOKMARK [1][-]{section.2}{Ferramentas usadas}{}% 2
+\BOOKMARK [1][-]{section.3}{Dados}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Transforma\347\343o do Dataset original}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Divis\343o dos dados para o estudo}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{Forma como os dados foram explorados no estudo}{section.3}% 6
+\BOOKMARK [1][-]{section.4}{Estudo com Redes Neuronais}{}% 7
+\BOOKMARK [2][-]{subsection.4.1}{Estrutura usada}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.2}{Estudo da varia\347\343o do alfa}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.3}{Estudo da varia\347\343o do tamanho da Hidden Layer}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.4}{Estudo da varia\347\343o do n\372mero de itera\347\365es}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.5}{Estudo da varia\347\343o do tamanho da batch}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.6}{Conclus\365es}{section.4}% 13
+\BOOKMARK [1][-]{section*.1}{References}{}% 14

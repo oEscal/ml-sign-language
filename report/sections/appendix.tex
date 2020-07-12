@@ -1,0 +1,36 @@
+\section{Anexo}
+\subsection{\textit{Accuracy}}
+\begin{equation}
+    accuracy(yi,yj) =  \frac{1}{n_samples}\sum_{i=0}^{n_samples-1} 1(yj = yi)
+    \label{accuracy_equation}
+\end{equation}
+\subsection{Recall}
+
+\begin{itemize}
+    \item \textit{tp} = True positives
+    \item \textit{fn} = False negatives
+\end{itemize}
+
+\begin{equation}
+    recall(tp,fn) =  \frac{tp}{(tp + fn)}
+    \label{recall_equation}
+\end{equation}
+
+\subsection{Precision}
+
+\begin{itemize}
+    \item \textit{tp} = True positives
+    \item \textit{fp} = False positives
+\end{itemize}
+
+\begin{equation}
+    precision(tp,fp) =  \frac{tp}{(tp + fp)}
+    \label{precision_equation}
+\end{equation}
+
+\subsection{F1 Score}
+
+\begin{equation}
+    f1(precision,recall) =  2 * \frac{(precision * recall)}{(precision + recall)}
+    \label{f1_equation}
+\end{equation}
