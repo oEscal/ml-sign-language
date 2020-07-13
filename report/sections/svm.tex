@@ -360,15 +360,3 @@ Macro Average & 1.0 & 1.0 & 1.0 & 1.0\\
 \label{tab: poly_confusion_matrix}
 \end{center}
 \end{table*}
-
-\subsection{Trabalhos relacionados}
-Actualmente existe uma quantidade enorme de estudos relacionados com o processo de \textit{model selection} pois este desempenha um papel fulcral no sucesso do resultado de um algoritmo de \textit{machine learning}. Novos e melhores critérios de selecção têm-se vindo a desenvolver, apesar de neste caso iremos filtrar estes métodos para aqueles aplicáveis em \textit{SVM}, ref \cite{model_selection}.
-\begin{itemize}
-    \item \textit{Empirical error criterion}: Neste critério de selecção são considerados um sub-conjunto do \textit{dataset} para fazer uma aproximação de risco do algoritmo.
-    \item \textit{GACV}: Este critério é considerada uma estimativa pessimista do \textit{missclassification error}.  
-    É obtido primeiramente uma aproximação com a função do tipo \textit{leaving-out} baseado numa probabilidade logarítmica negativa e de seguida passamos ao processo de substituição dos elementos diagonais de certas matrizes por trace/n (n=dimensão da matrix) \cite{GCVA}.
-    \item  \textit{VC dimension criterion}: É estritamente proporcional ao limite da margem do raio, cuja formula é:
-    \begin{equation}
-        T = R^{2} * \left \| w \right \|^{2}
-    \end{equation}{}
-\end{itemize}
