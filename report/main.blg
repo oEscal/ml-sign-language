@@ -1,0 +1,61 @@
+This is BibTeX, Version 0.99d (TeX Live 2019/Arch Linux)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: main.aux
+The style file: IEEEtran.bst
+Reallocated singl_function (elt_size=8) to 100 items from 50.
+Reallocated singl_function (elt_size=8) to 100 items from 50.
+Reallocated singl_function (elt_size=8) to 100 items from 50.
+Reallocated wiz_functions (elt_size=8) to 6000 items from 3000.
+Reallocated singl_function (elt_size=8) to 100 items from 50.
+Database file #1: bibliography.bib
+Warning--entry type for "cpu_vs_gpu" isn't style-file defined
+--line 26 of file bibliography.bib
+-- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+Warning--empty journal in early_stopping
+Warning--empty booktitle in batch_size_increase
+
+Done.
+You've used 5 entries,
+            4087 wiz_defined-function locations,
+            846 strings with 7996 characters,
+and the built_in function-call counts, 2205 in all, are:
+= -- 140
+> -- 59
+< -- 0
++ -- 28
+- -- 14
+* -- 106
+:= -- 375
+add.period$ -- 10
+call.type$ -- 5
+change.case$ -- 4
+chr.to.int$ -- 0
+cite$ -- 7
+duplicate$ -- 175
+empty$ -- 221
+format.name$ -- 17
+if$ -- 478
+int.to.chr$ -- 0
+int.to.str$ -- 5
+missing$ -- 39
+newline$ -- 42
+num.names$ -- 5
+pop$ -- 121
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 160
+stack$ -- 0
+substring$ -- 4
+swap$ -- 101
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 5
+warning$ -- 2
+while$ -- 5
+width$ -- 6
+write$ -- 63
+(There were 3 warnings)
